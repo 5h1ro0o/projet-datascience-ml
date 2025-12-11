@@ -16,6 +16,8 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 
 ## 1. Exploration des Données
 
+**Fichier source** : `visualisations_exploration.png` (4 subplots)
+
 ### Visualisation 1.1 : Distribution des Prix
 
 **Observation** : L'histogramme montre une distribution asymétrique à droite (right-skewed) des prix.
@@ -38,7 +40,7 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 **Observation** : Le diagramme en barres horizontales révèle la répartition des marques dans le dataset.
 
 **Interprétations** :
-- **Toyota** domine largement avec environ 30 véhicules
+- Toyota domine largement avec environ 30 véhicules
 - Les marques japonaises sont fortement représentées : Nissan, Mazda, Honda, Mitsubishi, Subaru
 - Présence significative de marques européennes : Volkswagen, Peugeot, Volvo
 - Marque américaine Dodge également présente dans le top 10
@@ -55,12 +57,12 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 **Observation** : Les boxplots comparent les distributions de prix entre véhicules diesel et essence.
 
 **Interprétations** :
-- Les véhicules **diesel** présentent une médiane de prix nettement supérieure aux véhicules essence
+- Les véhicules diesel présentent une médiane de prix nettement supérieure aux véhicules essence
 - La boîte interquartile du diesel est plus haute et plus large, indiquant une variabilité importante
 - Plusieurs outliers visibles dans les deux catégories
-- Le diesel atteint des prix maximums plus élevés (~32 000$) contre ~45 000$ pour l'essence
+- Le diesel atteint des prix maximums plus élevés (environ 32 000$) contre environ 45 000$ pour l'essence
 
-**Insights** :
+**Analyse** :
 - Dans les années 80, le diesel était associé aux véhicules plus lourds et haut de gamme
 - Le type de carburant est un prédicteur significatif du prix
 - Les véhicules essence couvrent un spectre plus large (économique à luxe)
@@ -72,14 +74,14 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 **Observation** : Les boxplots montrent une relation croissante entre nombre de cylindres et prix.
 
 **Interprétations** :
-- **Relation progressive** : plus de cylindres = prix plus élevé
-- Véhicules 4 cylindres (four) : segment économique, médiane ~9 000$
-- Véhicules 5 cylindres (five) : segment intermédiaire, médiane ~13 000$
-- Véhicules 6 cylindres (six) : segment moyen-premium, médiane ~15 000$
-- Véhicules 8 cylindres (eight) : segment premium, médiane ~21 000$
+- Relation progressive : plus de cylindres = prix plus élevé
+- Véhicules 4 cylindres (four) : segment économique, médiane environ 9 000$
+- Véhicules 5 cylindres (five) : segment intermédiaire, médiane environ 13 000$
+- Véhicules 6 cylindres (six) : segment moyen-premium, médiane environ 15 000$
+- Véhicules 8 cylindres (eight) : segment premium, médiane environ 21 000$
 - Catégories "twelve" et "two" : outliers avec prix élevés mais peu de représentants
 
-**Insights** :
+**Analyse** :
 - Le nombre de cylindres est un proxy direct de la puissance et du segment de marché
 - Variable catégorielle hautement informative pour la prédiction
 - Les véhicules 3 cylindres ("three") existent mais sont très rares
@@ -88,25 +90,27 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 
 ## 2. Analyse des Corrélations
 
+**Fichier source** : `matrice_correlation.png`
+
 ### Visualisation 2.1 : Matrice de Corrélation Complète
 
 **Observation** : La heatmap révèle les relations entre toutes les variables numériques du dataset.
 
 **Corrélations fortes avec le prix (> 0.75)** :
-1. **engine_size** (0.872) : La taille du moteur est le prédicteur le plus corrélé
-2. **curb_weight** (0.834) : Le poids du véhicule est fortement corrélé au prix
-3. **horsepower** (0.811) : La puissance est directement liée au prix
-4. **width** (0.751) : La largeur du véhicule indique le segment
+1. engine_size (0.872) : La taille du moteur est le prédicteur le plus corrélé
+2. curb_weight (0.834) : Le poids du véhicule est fortement corrélé au prix
+3. horsepower (0.811) : La puissance est directement liée au prix
+4. width (0.751) : La largeur du véhicule indique le segment
 
 **Corrélations moyennes (0.50 - 0.75)** :
-- **highway_mpg** (0.705) : Consommation autoroutière
-- **length** (0.691) : Longueur du véhicule
-- **city_mpg** (0.687) : Consommation urbaine
-- **wheel_base** (0.585) : Empattement
-- **bore** (0.543) : Alésage du cylindre
+- highway_mpg (0.705) : Consommation autoroutière
+- length (0.691) : Longueur du véhicule
+- city_mpg (0.687) : Consommation urbaine
+- wheel_base (0.585) : Empattement
+- bore (0.543) : Alésage du cylindre
 
 **Note sur les corrélations de consommation** :
-Les valeurs positives de city_mpg et highway_mpg dans la matrice indiquent une corrélation avec les autres variables. La relation inverse avec le prix (plus économique = moins cher) est visible dans les scatter plots
+Les valeurs positives de city_mpg et highway_mpg dans la matrice indiquent une corrélation avec les autres variables. La relation inverse avec le prix (plus économique = moins cher) est visible dans les scatter plots.
 
 **Multicolinéarité visible** :
 - Les dimensions du véhicule sont fortement corrélées entre elles
@@ -124,6 +128,8 @@ Les valeurs positives de city_mpg et highway_mpg dans la matrice indiquent une c
 
 ## 3. Relations Variables-Prix
 
+**Fichier source** : `scatter_plots.png` (6 subplots)
+
 ### Visualisation 3.1 : Scatter Plots - Prix vs Variables Clés
 
 Six nuages de points révèlent les relations entre variables explicatives et prix.
@@ -131,15 +137,15 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Plot 3.1.1 : Prix vs Engine Size (Taille du moteur)
 
 **Interprétations** :
-- Relation **positive quasi-linéaire** très nette
-- Corrélation visuelle très forte, confirmant le coefficient de 0.87
+- Relation positive quasi-linéaire très nette
+- Corrélation visuelle très forte, confirmant le coefficient de 0.872
 - Peu de dispersion, la tendance est claire
 - Quelques points au-dessus de la ligne de tendance : marques premium avec petit moteur mais prix élevé (ex: voitures de luxe compactes)
 
 #### Plot 3.1.2 : Prix vs Horsepower (Puissance)
 
 **Interprétations** :
-- Relation positive avec **dispersion modérée**
+- Relation positive avec dispersion modérée
 - Certains véhicules peu puissants (<100 HP) atteignent 15 000-20 000$ : véhicules axés luxe/confort plutôt que performance
 - Certains véhicules puissants (>150 HP) restent sous 15 000$ : sportives d'entrée de gamme
 - La puissance seule ne détermine pas tout le prix
@@ -147,7 +153,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Plot 3.1.3 : Prix vs Curb Weight (Poids)
 
 **Interprétations** :
-- Relation **positive et linéaire**, très nette
+- Relation positive et linéaire, très nette
 - Le poids est un excellent prédicteur du prix
 - Les véhicules lourds (>3 500 lbs) sont systématiquement chers
 - Le poids reflète à la fois la taille, les matériaux et le segment
@@ -155,7 +161,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Plot 3.1.4 : Prix vs Length (Longueur)
 
 **Interprétations** :
-- Relation positive mais avec **dispersion importante**
+- Relation positive mais avec dispersion importante
 - Les grandes berlines sont chères, mais pas systématiquement
 - Certains breaks familiaux sont longs mais abordables
 - La longueur seule est un prédicteur moins fiable
@@ -170,7 +176,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Plot 3.1.6 : Prix vs City MPG (Consommation ville)
 
 **Interprétations** :
-- Relation **négative claire** : plus le MPG est élevé (= consommation faible), plus le prix est bas
+- Relation négative claire : plus le MPG est élevé (= consommation faible), plus le prix est bas
 - Les véhicules économiques (>30 MPG) sont concentrés sous 15 000$
 - Les véhicules de luxe/sport consomment beaucoup (15-25 MPG) et coûtent cher
 - Logique économique : performance et luxe vs économie de carburant
@@ -178,6 +184,8 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ---
 
 ## 4. Détection des Outliers
+
+**Fichier source** : `boxplots_outliers.png` (6 subplots)
 
 ### Visualisation 4.1 : Boxplots des Variables Clés
 
@@ -187,7 +195,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Outliers identifiés** :
 - Plusieurs véhicules au-dessus de 30 000$
-- Maximum à ~45 000$ (très probablement Porsche, Jaguar)
+- Maximum à environ 45 000$ (très probablement Porsche, Jaguar)
 
 **Décision** : Conservés - ce sont des segments légitimes (luxe/sport)
 
@@ -231,12 +239,14 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 5.1 : Régression Linéaire - Prédictions vs Réalité
 
+**Fichier source** : `regression_lineaire_predictions.png`
+
 **Observation** : Scatter plot des prédictions vs valeurs réelles avec ligne de référence y=x.
 
 **Interprétations** :
-- Les points sont **globalement proches de la diagonale** → bonnes prédictions
+- Les points sont globalement proches de la diagonale (bonnes prédictions)
 - Alignement correct pour les prix 5 000$ - 25 000$
-- **Dispersion visible pour les prix > 30 000$** : le modèle sous-estime plusieurs véhicules haut de gamme
+- Dispersion visible pour les prix > 30 000$ : le modèle sous-estime plusieurs véhicules haut de gamme
 - Pas de biais systématique majeur
 - Quelques prédictions autour de 25 000-28 000$ pour des véhicules à 31 000$+
 
@@ -248,6 +258,8 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ---
 
 ### Visualisation 5.2 : Optimisation de k pour KNN
+
+**Fichier source** : `knn_optimisation_k.png`
 
 **Observation** : Courbe du RMSE en fonction du nombre de voisins k.
 
@@ -268,7 +280,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Les prédictions deviennent trop générales
 
 **Enseignement** :
-- **k = 3 donne le meilleur RMSE** en validation croisée
+- k = 3 donne le meilleur RMSE en validation croisée
 - La courbe montre une augmentation progressive au-delà de k=3
 - Confirmation du principe biais-variance : k petit = surapprentissage, k grand = sous-apprentissage
 
@@ -276,12 +288,14 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 5.3 : Arbre de Décision - Visualisation Complète
 
+**Fichier source** : `arbre_decision.png`
+
 **Observation** : Représentation de l'arbre de décision avec profondeur maximale de 5.
 
 **Analyse de la structure** :
 
 **Nœud racine** :
-- Première division sur **curb_weight ≤ 2650.0**
+- Première division sur curb_weight <= 2650.0
 - Confirmation : le poids est la variable la plus discriminante
 
 **Branche gauche (véhicules légers)** :
@@ -295,11 +309,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Segment moyen à premium
 
 **Règles extraites (exemples)** :
-- Si curb_weight ≤ 2221.5 ET body_style ≤ 2.5 → Prix ≈ 6 485$
-- Si curb_weight > 2650.0 ET engine_size > 188.5 → Prix ≈ 27 656$
+- Si curb_weight <= 2221.5 ET body_style <= 2.5 → Prix = 6 485$
+- Si curb_weight > 2650.0 ET engine_size > 188.5 → Prix = 27 656$
 
 **Avantages** :
-- **Très interprétable** : chaque décision est explicite
+- Très interprétable : chaque décision est explicite
 - Idéal pour expliquer les prédictions à un non-technicien
 - Profondeur 5 limite le surapprentissage
 
@@ -307,24 +321,26 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 5.4 : Random Forest - Importance des Variables
 
+**Fichier source** : `random_forest_importance.png`
+
 **Observation** : Diagramme en barres des 15 features les plus importantes.
 
 **Top 10 des variables (valeurs exactes)** :
-1. **curb_weight** : 0.432 (43.2%) - Variable dominante
-2. **engine_size** : 0.317 (31.7%) - Deuxième facteur majeur
-3. **horsepower** : 0.065 (6.5%)
-4. **highway_mpg** : 0.064 (6.4%)
-5. **city_mpg** : 0.038 (3.8%)
-6. **width** : 0.028 (2.8%)
-7. **make_encoded** : 0.020 (2.0%)
-8. **wheel_base** : 0.010 (1.0%)
-9. **peak_rpm** : 0.007 (0.7%)
-10. **length** : 0.005 (0.5%)
+1. curb_weight : 0.432 (43.2%) - Variable dominante
+2. engine_size : 0.317 (31.7%) - Deuxième facteur majeur
+3. horsepower : 0.065 (6.5%)
+4. highway_mpg : 0.064 (6.4%)
+5. city_mpg : 0.038 (3.8%)
+6. width : 0.028 (2.8%)
+7. make_encoded : 0.020 (2.0%)
+8. wheel_base : 0.010 (1.0%)
+9. peak_rpm : 0.007 (0.7%)
+10. length : 0.005 (0.5%)
 
 **Variables restantes** : < 0.5% chacune
 
-**Insights** :
-- **Domination écrasante** du poids et de la taille du moteur (74.9% d'importance combinée)
+**Analyse** :
+- Domination écrasante du poids et de la taille du moteur (74.9% d'importance combinée)
 - Les caractéristiques physiques primordiales
 - Les variables catégorielles (marque, style) ont un impact limité avec l'encodage label
 - L'encodage one-hot aurait probablement donné plus d'importance à la marque
@@ -339,28 +355,30 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 6.1 : Courbes d'Apprentissage - Random Forest
 
+**Fichier source** : `courbes_apprentissage.png`
+
 **Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset.
 
 **Début de courbe (16 exemples, 10%)** :
 - RMSE train très faible (environ 5 700$)
 - RMSE validation très élevé (environ 6 800$)
-- **Gap énorme** : surapprentissage massif avec peu de données
+- Gap énorme : surapprentissage massif avec peu de données
 
 **Milieu de courbe (48-80 exemples, 30-50%)** :
 - RMSE train augmente progressivement (vers 1 900$)
-- RMSE validation **diminue fortement** (vers 3 600$ puis 3 200$)
+- RMSE validation diminue fortement (vers 3 600$ puis 3 200$)
 - Le gap se réduit significativement
 
 **Fin de courbe (128-160 exemples, 80-100%)** :
 - RMSE train stable (environ 1 550-1 600$)
 - RMSE validation converge (environ 2 600$)
-- **Gap réduit** : les courbes se rapprochent
+- Gap réduit : les courbes se rapprochent
 
 **Diagnostic** :
-- ✅ **Pas de sous-apprentissage** : les scores ne sont pas au plancher
-- ✅ **Surapprentissage limité** : gap final acceptable entre train et validation
-- ✅ **Le modèle généralise bien** avec le dataset complet
-- ⚠️ **Plateau atteint** : plus de données n'améliorerait que marginalement les performances
+- Pas de sous-apprentissage : les scores ne sont pas au plancher
+- Surapprentissage limité : gap final acceptable entre train et validation
+- Le modèle généralise bien avec le dataset complet
+- Plateau atteint : plus de données n'améliorerait que marginalement les performances
 
 **Conclusion** : Le Random Forest avec 100 arbres et max_depth=10 est bien calibré pour ce dataset de 201 véhicules.
 
@@ -369,6 +387,8 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ## 7. Clustering - Segmentation du Marché
 
 ### Visualisation 7.1 : Méthode du Coude - K-means
+
+**Fichier source** : `kmeans_coude.png`
 
 **Observation** : Courbe de l'inertie (somme des distances intra-cluster) en fonction de k.
 
@@ -381,14 +401,14 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Amélioration significative
 
 **k = 4** : Inertie environ 147
-- **Coude visible** : point d'inflexion de la courbe
+- Coude visible : point d'inflexion de la courbe
 - Amélioration notable mais la décroissance ralentit
 
 **k = 5 à k = 10** : Inertie continue de baisser progressivement
 - Amélioration marginale décroissante
 - Complexité accrue sans gain proportionnel
 
-**Choix optimal** : **k = 4 clusters**
+**Choix optimal** : k = 4 clusters
 - Point où le rapport amélioration/complexité est optimal
 - Interprétation métier : 4 segments de marché distincts
 
@@ -396,28 +416,30 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 7.2 : Visualisation des Clusters
 
+**Fichier source** : `clusters_visualisation.png` (2 subplots)
+
 **Description** : Deux scatter plots colorés par cluster.
 
 #### Plot gauche : Taille moteur vs Puissance
 
 **Cluster 0 (jaune)** :
 - Petits moteurs (50-80 cu.in), faible puissance (45-80 HP)
-- **Segment économique** : citadines, compactes
+- Segment économique : citadines, compactes
 - Exemples : Honda Civic, Toyota Corolla, petites Mazda
 
 **Cluster 1 (bleu clair)** :
 - Moteurs moyens (90-130 cu.in), puissance moyenne (80-110 HP)
-- **Segment familial** : berlines moyennes, véhicules polyvalents
+- Segment familial : berlines moyennes, véhicules polyvalents
 - Exemples : Volkswagen, Nissan Maxima, Honda Accord
 
 **Cluster 2 (violet/mauve)** :
 - Moteurs moyens/gros (140-180 cu.in), puissance élevée (110-160 HP)
-- **Segment sportif/premium** : coupés sportifs, berlines dynamiques
+- Segment sportif/premium : coupés sportifs, berlines dynamiques
 - Exemples : Mazda RX-7, Alfa Romeo, BMW entrée de gamme
 
 **Cluster 3 (vert/turquoise)** :
 - Gros moteurs (>180 cu.in), très haute puissance (>160 HP)
-- **Segment luxe/sport** : grosses berlines, sportives haut de gamme
+- Segment luxe/sport : grosses berlines, sportives haut de gamme
 - Exemples : BMW Série 7, Mercedes, Jaguar, Porsche
 
 **Séparation** : Les clusters sont bien distincts avec peu de chevauchement.
@@ -429,24 +451,24 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Cluster 0 (jaune)** :
 - Poids : 1 500-2 300 lbs
 - Prix : 5 000-10 000$
-- **Véhicules économiques**
+- Véhicules économiques
 
 **Cluster 1 (bleu)** :
 - Poids : 2 300-2 800 lbs
 - Prix : 8 000-17 000$
-- **Véhicules familiaux**
+- Véhicules familiaux
 
 **Cluster 2 (violet)** :
 - Poids : 2 500-3 200 lbs
 - Prix : 12 000-25 000$
-- **Véhicules sportifs/premium**
+- Véhicules sportifs/premium
 
 **Cluster 3 (vert)** :
 - Poids : 3 000-4 000 lbs
 - Prix : 20 000-45 000$
-- **Véhicules luxe/sport haut de gamme**
+- Véhicules luxe/sport haut de gamme
 
-**Insights marketing** :
+**Analyse marketing** :
 - Segmentation claire et exploitable commercialement
 - Chaque cluster correspond à un persona client différent
 - Stratégies marketing et pricing adaptables par cluster
@@ -455,6 +477,8 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ---
 
 ### Visualisation 7.3 : Dendrogramme - Classification Hiérarchique
+
+**Fichier source** : `dendrogramme.png`
 
 **Observation** : Arbre hiérarchique montrant les fusions successives de 50 véhicules.
 
@@ -476,7 +500,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Niveau haut (distance 10-20)** :
 - Fusions majeures entre grands groupes
-- Si on coupe à hauteur 10-15, on obtient **4 grands clusters**
+- Si on coupe à hauteur 10-15, on obtient 4 grands clusters
 - Cohérence avec la méthode K-means
 
 **Véhicules isolés** :
@@ -495,14 +519,16 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisation 8.1 : Métriques de Performance - 4 Subplots
 
+**Fichier source** : `comparaison_modeles.png` (4 subplots)
+
 #### Subplot 1 : RMSE Test par Modèle
 
 **Classement** (du meilleur au moins bon) :
-1. **Random Forest** : 2 195.18$ ⭐ Meilleur RMSE
-2. **Gradient Boosting** : 2 383.14$
-3. **Arbre de Décision** : 2 855.92$
-4. **Régression Linéaire** : 4 660.42$
-5. **KNN** : 5 406.69$ ❌ Pire RMSE
+1. Random Forest : 2 195.18$ (Meilleur RMSE)
+2. Gradient Boosting : 2 383.14$
+3. Arbre de Décision : 2 855.92$
+4. Régression Linéaire : 4 660.42$
+5. KNN : 5 406.69$ (Pire RMSE)
 
 **Interprétation** :
 - Random Forest domine avec une marge confortable
@@ -512,11 +538,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Subplot 2 : R² Test par Modèle
 
 **Classement** :
-1. **Random Forest** : R² = 0.9606 ⭐ Explique 96.06% de la variance
-2. **Gradient Boosting** : R² = 0.9536 (95.36%)
-3. **Arbre de Décision** : R² = 0.9333 (93.33%)
-4. **Régression Linéaire** : R² = 0.8225 (82.25%)
-5. **KNN** : R² = 0.7611 (76.11%)
+1. Random Forest : R² = 0.9606 (Explique 96.06% de la variance)
+2. Gradient Boosting : R² = 0.9536 (95.36%)
+3. Arbre de Décision : R² = 0.9333 (93.33%)
+4. Régression Linéaire : R² = 0.8225 (82.25%)
+5. KNN : R² = 0.7611 (76.11%)
 
 **Interprétation** :
 - Random Forest et Gradient Boosting ont un pouvoir prédictif excellent
@@ -530,27 +556,27 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Régression Linéaire** :
 - RMSE Train : 2 391.10$
 - RMSE Test : 4 660.42$
-- Gap : 2 269.32$ → Variance élevée
+- Gap : 2 269.32$ (Variance élevée)
 
 **KNN** :
 - RMSE Train : 2 026.00$
 - RMSE Test : 5 406.69$
-- Gap : 3 380.69$ → Surapprentissage sévère
+- Gap : 3 380.69$ (Surapprentissage sévère)
 
 **Arbre de Décision** :
 - RMSE Train : 1 920.15$
 - RMSE Test : 2 855.92$
-- Gap : 935.77$ → Léger surapprentissage
+- Gap : 935.77$ (Léger surapprentissage)
 
 **Random Forest** :
 - RMSE Train : 1 531.83$
 - RMSE Test : 2 195.18$
-- Gap : 663.35$ → **Excellent équilibre** ✅
+- Gap : 663.35$ (Excellent équilibre)
 
 **Gradient Boosting** :
 - RMSE Train : 341.49$
 - RMSE Test : 2 383.14$
-- Gap : 2 041.65$ → Surapprentissage massif ⚠️
+- Gap : 2 041.65$ (Surapprentissage massif)
 
 **Enseignement** : Random Forest offre le meilleur compromis généralisation/performance.
 
@@ -559,17 +585,19 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Ligne rouge pointillée** : Objectif de 15% d'erreur
 
 **Classement** :
-1. **Gradient Boosting** : 9.39% ✅ Objectif largement dépassé
-2. **Random Forest** : 9.65% ✅ Objectif dépassé
-3. **Arbre de Décision** : 11.49% ✅ Objectif atteint
-4. **Régression Linéaire** : 20.17% ❌ Objectif non atteint
-5. **KNN** : 20.20% ❌ Objectif non atteint
+1. Gradient Boosting : 9.39% (Objectif largement dépassé)
+2. Random Forest : 9.65% (Objectif dépassé)
+3. Arbre de Décision : 11.49% (Objectif atteint)
+4. Régression Linéaire : 20.17% (Objectif non atteint)
+5. KNN : 20.20% (Objectif non atteint)
 
 **Conclusion** : 3 modèles sur 5 atteignent l'objectif de moins de 15% d'erreur.
 
 ---
 
 ### Visualisation 8.2 : Prédictions vs Réalité - Tous les Modèles
+
+**Fichier source** : `predictions_tous_modeles.png` (5 subplots)
 
 **Description** : 5 scatter plots comparant prédictions et valeurs réelles pour chaque modèle.
 
@@ -585,7 +613,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Observations** :
 - Alignement similaire à la régression linéaire
-- **Dispersion plus importante**
+- Dispersion plus importante
 - Effet "escalier" visible : prédictions discrètes basées sur moyennes de voisins
 - Difficultés sur les extrêmes
 
@@ -593,14 +621,14 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Observations** :
 - Alignement globalement bon
-- **Effet plateau** : prédictions constantes dans les feuilles de l'arbre
+- Effet plateau : prédictions constantes dans les feuilles de l'arbre
 - Quelques prédictions éloignées de la diagonale
 - Dispersion modérée
 
 #### Random Forest
 
 **Observations** :
-- **Excellent alignement** sur toute la gamme de prix ⭐
+- Excellent alignement sur toute la gamme de prix
 - Dispersion minimale autour de la diagonale
 - Très peu d'erreurs majeures
 - Prédictions lisses grâce à l'agrégation de 100 arbres
@@ -609,14 +637,14 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Gradient Boosting
 
 **Observations** :
-- **Meilleur alignement visuel** de tous les modèles ⭐
+- Meilleur alignement visuel de tous les modèles
 - Dispersion très faible
 - Prédictions très précises
 - Pas de biais systématique visible
 - Légèrement meilleur que Random Forest visuellement
 
 **Comparaison visuelle globale** :
-- GB ≈ RF >>> Arbre > LR ≈ KNN
+- GB = RF > Arbre > LR = KNN
 - Les modèles ensemblistes produisent des nuages de points beaucoup plus concentrés autour de la diagonale
 - La différence de qualité est visuellement évidente
 
@@ -632,15 +660,15 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - 4 segments naturels de marché identifiés par clustering
 
 #### Variables déterminantes
-- **Top 3** : curb_weight (0.83), engine_size (0.87), horsepower (0.81)
+- Top 3 : curb_weight (0.834), engine_size (0.872), horsepower (0.811)
 - Forte multicolinéarité entre dimensions physiques
 - Variables catégorielles moins discriminantes avec encodage label
 
 #### Performance des modèles
-- **Meilleur modèle global** : Random Forest (RMSE test = 2 195.18$, R² = 0.9606, erreur = 9.65%)
-- **Alternative** : Gradient Boosting (RMSE = 2 383.14$, R² = 0.9536, erreur = 9.39% mais surapprentissage)
-- **Modèle le plus interprétable** : Arbre de Décision (RMSE = 2 855.92$, erreur = 11.49%)
-- **Modèles inadaptés** : Régression Linéaire (20.17% erreur) et KNN (20.20% erreur)
+- Meilleur modèle global : Random Forest (RMSE test = 2 195.18$, R² = 0.9606, erreur = 9.65%)
+- Alternative : Gradient Boosting (RMSE = 2 383.14$, R² = 0.9536, erreur = 9.39% mais surapprentissage)
+- Modèle le plus interprétable : Arbre de Décision (RMSE = 2 855.92$, erreur = 11.49%)
+- Modèles inadaptés : Régression Linéaire (20.17% erreur) et KNN (20.20% erreur)
 
 #### Validation
 - Courbes d'apprentissage saines pour Random Forest
@@ -655,11 +683,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ### Modèle Recommandé : Random Forest
 
 **Justification** :
-1. **Meilleur RMSE test** (2 195.18$) et **meilleur R²** (0.9606)
-2. **Erreur de 9.65%** : largement sous l'objectif de 15%
-3. **Équilibre train/test optimal** : gap de seulement 663.35$ (pas de surapprentissage)
-4. **Robustesse** : validation croisée 5-fold donne RMSE moyen de 2 351.04$ (±605.07)
-5. **Interprétabilité acceptable** : importance des variables accessible
+1. Meilleur RMSE test (2 195.18$) et meilleur R² (0.9606)
+2. Erreur de 9.65% : largement sous l'objectif de 15%
+3. Équilibre train/test optimal : gap de seulement 663.35$ (pas de surapprentissage)
+4. Robustesse : validation croisée 5-fold donne RMSE moyen de 2 351.04$ (±605.07)
+5. Interprétabilité acceptable : importance des variables accessible
 
 **Limites** :
 - Moins interprétable qu'un arbre unique
@@ -668,11 +696,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Visualisations Essentielles pour Présentation
 
-1. ✅ **Matrice de corrélation** : montre les relations clés entre variables
-2. ✅ **Scatter plots** : illustre les relations prix-features principales
-3. ✅ **Courbes d'apprentissage** : prouve la généralisation du modèle
-4. ✅ **Comparaison modèles** (4 subplots) : justifie le choix de Random Forest
-5. ✅ **Clusters visualisation** : démontre la segmentation du marché
+1. Matrice de corrélation : montre les relations clés entre variables
+2. Scatter plots : illustre les relations prix-features principales
+3. Courbes d'apprentissage : prouve la généralisation du modèle
+4. Comparaison modèles (4 subplots) : justifie le choix de Random Forest
+5. Clusters visualisation : démontre la segmentation du marché
 
 ### Messages Clés
 
@@ -688,12 +716,12 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 Les visualisations produites dans ce projet démontrent une démarche méthodique et rigoureuse conforme aux standards de la Data Science. L'analyse a permis de :
 
-1. **Comprendre** la structure des données et identifier les variables clés
-2. **Justifier** les décisions de prétraitement (conservation des outliers, gestion des valeurs manquantes)
-3. **Évaluer** objectivement 5 modèles de régression différents
-4. **Valider** la généralisation du meilleur modèle (Random Forest)
-5. **Segmenter** le marché en 4 clusters exploitables
-6. **Atteindre** l'objectif fixé : erreur < 15% (résultat : 9.65%)
+1. Comprendre la structure des données et identifier les variables clés
+2. Justifier les décisions de prétraitement (conservation des outliers, gestion des valeurs manquantes)
+3. Évaluer objectivement 5 modèles de régression différents
+4. Valider la généralisation du meilleur modèle (Random Forest)
+5. Segmenter le marché en 4 clusters exploitables
+6. Atteindre l'objectif fixé : erreur < 15% (résultat : 9.65%)
 
 Le modèle Random Forest retenu prédit le prix des voitures d'occasion avec un R² de 0.9606 (96.06% de variance expliquée) et une erreur moyenne de 9.65%, dépassant largement les attentes initiales du projet (objectif : <15%).
 
