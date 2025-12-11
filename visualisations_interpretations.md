@@ -1,594 +1,700 @@
 # Visualisations et Interprétations - Projet Prédiction Prix Voitures d'Occasion
 
-**Auteurs** : Matteo Robin, Florian Huguet
+**Auteurs** : Florian Huguet, Matteo Robin
 **Date** : Décembre 2025
 **Contexte** : Projet de cours - Module d'initiation au Data Science et Machine Learning
 
 ---
 
-## Table des Matières
+## Introduction
 
-1. [Exploration des Données](#1-exploration-des-données)
-2. [Corrélations](#2-corrélations)
-3. [Relations Variables-Prix](#3-relations-variables-prix)
-4. [Détection des Outliers](#4-détection-des-outliers)
-5. [Résultats des Modèles](#5-résultats-des-modèles)
-6. [Validation et Diagnostics](#6-validation-et-diagnostics)
-7. [Clustering](#7-clustering)
-8. [Comparaisons Finales](#8-comparaisons-finales)
+Ce document présente l'analyse détaillée des visualisations générées dans le cadre du projet de prédiction du prix de voitures d'occasion. L'objectif est de construire un modèle de régression capable de prédire le prix avec une erreur inférieure à 15% du prix réel.
+
+Toutes les interprétations ci-dessous sont basées exclusivement sur les visualisations produites par notre analyse.
 
 ---
 
 ## 1. Exploration des Données
 
 ### Visualisation 1.1 : Distribution des Prix
-**Fichier** : `visualisations_exploration.png` (subplot 1)
 
-**Description** : Histogramme de la distribution des prix des véhicules.
+**Observation** : L'histogramme montre une distribution asymétrique à droite (right-skewed) des prix.
 
-**Interprétation** :
-- La distribution est **asymétrique à droite** (right-skewed)
-- La majorité des véhicules se situent entre 5 000$ et 20 000$
-- Un pic principal vers 10 000$-15 000$ correspond aux voitures standards
-- Une queue longue vers la droite (jusqu'à 45 000$) représente les véhicules haut de gamme
-- Présence de quelques véhicules très chers (outliers légitimes : voitures de luxe/sport)
+**Interprétations** :
+- La majorité des véhicules se concentre dans la fourchette 5 000$ - 15 000$
+- Un pic principal visible autour de 10 000$, représentant le segment des voitures standards
+- Une longue queue vers la droite s'étend jusqu'à 45 000$, correspondant aux véhicules haut de gamme
+- Présence de plusieurs véhicules dans la tranche 30 000$ - 45 000$ (véhicules de luxe et sportifs)
 
 **Implications pour la modélisation** :
-- La distribution non normale peut affecter la régression linéaire
-- Les modèles ensemblistes (Random Forest) sont plus adaptés à ce type de distribution
+- La distribution non-normale peut affecter les performances de la régression linéaire classique
+- Les modèles ensemblistes seront probablement plus adaptés à cette distribution
+- Pas de transformation logarithmique nécessaire vu la distribution relativement équilibrée
 
 ---
 
 ### Visualisation 1.2 : Top 10 des Marques
-**Fichier** : `visualisations_exploration.png` (subplot 2)
 
-**Description** : Diagramme en barres horizontales montrant les 10 marques les plus représentées.
+**Observation** : Le diagramme en barres horizontales révèle la répartition des marques dans le dataset.
 
-**Interprétation** :
-- **Toyota** est la marque la plus représentée (~30 véhicules)
-- Suivent **Nissan, Mazda, Honda** (marques japonaises dominantes)
-- Présence de marques européennes comme **Audi, BMW, Volkswagen**
-- Les marques américaines sont moins représentées
+**Interprétations** :
+- **Toyota** domine largement avec environ 30 véhicules
+- Les marques japonaises sont fortement représentées : Nissan, Mazda, Honda, Mitsubishi, Subaru
+- Présence significative de marques européennes : Volkswagen, Peugeot, Volvo
+- Marque américaine Dodge également présente dans le top 10
 
 **Implications** :
-- Le dataset est fortement orienté vers les marques japonaises des années 80
+- Dataset orienté vers le marché automobile des années 80 avec prédominance japonaise
+- L'encodage de la variable "marque" sera important car certaines marques sont associées à des segments premium
 - Possible biais géographique/temporel dans les données
-- L'encodage de la marque sera une feature importante (certaines marques = premium)
 
 ---
 
 ### Visualisation 1.3 : Prix par Type de Carburant
-**Fichier** : `visualisations_exploration.png` (subplot 3)
 
-**Description** : Boxplots comparant les prix selon le type de carburant (gas vs diesel).
+**Observation** : Les boxplots comparent les distributions de prix entre véhicules diesel et essence.
 
-**Interprétation** :
-- Les véhicules **diesel** ont une médiane de prix **plus élevée** que les véhicules essence
-- Plus grande variabilité des prix pour le diesel (interquartile range plus large)
-- Plusieurs outliers dans les deux catégories
-- Le diesel était associé aux véhicules plus lourds et premium dans les années 80
+**Interprétations** :
+- Les véhicules **diesel** présentent une médiane de prix nettement supérieure aux véhicules essence
+- La boîte interquartile du diesel est plus haute et plus large, indiquant une variabilité importante
+- Plusieurs outliers visibles dans les deux catégories
+- Le diesel atteint des prix maximums plus élevés (~32 000$) contre ~45 000$ pour l'essence
 
 **Insights** :
+- Dans les années 80, le diesel était associé aux véhicules plus lourds et haut de gamme
 - Le type de carburant est un prédicteur significatif du prix
-- Diesel = segment plus haut de gamme dans ce dataset
+- Les véhicules essence couvrent un spectre plus large (économique à luxe)
 
 ---
 
 ### Visualisation 1.4 : Prix par Nombre de Cylindres
-**Fichier** : `visualisations_exploration.png` (subplot 4)
 
-**Description** : Boxplots du prix selon le nombre de cylindres.
+**Observation** : Les boxplots montrent une relation croissante entre nombre de cylindres et prix.
 
-**Interprétation** :
-- Relation **croissante** : plus de cylindres = prix plus élevé
-- Véhicules 4 cylindres : segment économique (prix médian ~8 000$)
-- Véhicules 6 cylindres : segment moyen (prix médian ~15 000$)
-- Véhicules 8 cylindres et plus : segment premium/sport (prix médian > 20 000$)
-- Forte variabilité dans chaque catégorie
+**Interprétations** :
+- **Relation progressive** : plus de cylindres = prix plus élevé
+- Véhicules 4 cylindres (four) : segment économique, médiane ~9 000$
+- Véhicules 5 cylindres (five) : segment intermédiaire, médiane ~13 000$
+- Véhicules 6 cylindres (six) : segment moyen-premium, médiane ~15 000$
+- Véhicules 8 cylindres (eight) : segment premium, médiane ~21 000$
+- Catégories "twelve" et "two" : outliers avec prix élevés mais peu de représentants
 
 **Insights** :
-- Le nombre de cylindres est un proxy de la puissance et du segment
-- Variable catégorielle très informative pour la prédiction
+- Le nombre de cylindres est un proxy direct de la puissance et du segment de marché
+- Variable catégorielle hautement informative pour la prédiction
+- Les véhicules 3 cylindres ("three") existent mais sont très rares
 
 ---
 
-## 2. Corrélations
+## 2. Analyse des Corrélations
 
 ### Visualisation 2.1 : Matrice de Corrélation Complète
-**Fichier** : `matrice_correlation.png`
 
-**Description** : Heatmap de corrélation entre toutes les variables numériques.
+**Observation** : La heatmap révèle les relations entre toutes les variables numériques du dataset.
 
-**Interprétations clés** :
-
-#### Corrélations fortes avec le prix (> 0.7) :
-1. **engine_size** (0.87) : Plus le moteur est gros, plus le prix est élevé
-2. **curb_weight** (0.84) : Les voitures lourdes sont plus chères (luxe, SUV)
+**Corrélations fortes avec le prix (> 0.75)** :
+1. **curb_weight** (0.83) : Le poids du véhicule est fortement corrélé au prix
+2. **engine_size** (0.87) : La taille du moteur est le prédicteur le plus corrélé
 3. **horsepower** (0.81) : La puissance est directement liée au prix
-4. **width** (0.76) : Les véhicules larges sont généralement haut de gamme
-5. **length** (0.69) : Idem pour la longueur
+4. **width** (0.75) : La largeur du véhicule indique le segment
 
-#### Corrélations négatives avec le prix :
-- **city_mpg** (-0.69) : Plus la consommation est élevée (mpg faible), plus le prix est élevé
-- **highway_mpg** (-0.70) : Les voitures chères consomment plus
+**Corrélations moyennes (0.50 - 0.75)** :
+- **length** (0.69) : Longueur du véhicule
+- **wheel_base** (0.58) : Empattement
+- **height** (0.14) : Corrélation faible, la hauteur n'est pas un bon prédicteur
 
-#### Multicolinéarité détectée :
-- **engine_size ↔ curb_weight** (0.93) : forte corrélation
-- **length ↔ wheel_base** (0.88) : dimensions liées
-- **city_mpg ↔ highway_mpg** (0.97) : très forte corrélation
+**Corrélations négatives** :
+- **city_mpg** (-0.69) : Plus la consommation est économique, plus le prix est bas
+- **highway_mpg** (-0.70) : Même tendance pour l'autoroute
+- **peak_rpm** (-0.10) : Corrélation néglige able
+
+**Multicolinéarité détectée** :
+- **curb_weight ↔ engine_size** (0.93) : Très forte corrélation
+- **length ↔ wheel_base** (0.87) : Les dimensions sont liées
+- **width ↔ length** (0.84) : Idem
+- **city_mpg ↔ highway_mpg** (0.97) : Redondance presque totale
+- **engine_size ↔ horsepower** (0.81) : Attendu physiquement
 
 **Implications pour la modélisation** :
-- Multicolinéarité : peut affecter la régression linéaire (coefficients instables)
-- Pas de problème pour les arbres de décision et Random Forest
-- Possibilité de réduire la dimensionnalité (PCA) si nécessaire
+- La multicolinéarité peut déstabiliser les coefficients de la régression linéaire
+- Les modèles à base d'arbres (Random Forest) ne seront pas affectés
+- Possibilité d'éliminer highway_mpg (redondant avec city_mpg)
+- Les 3 variables majeures (curb_weight, engine_size, horsepower) capturent l'essentiel
 
 ---
 
 ## 3. Relations Variables-Prix
 
-### Visualisation 3.1 : Scatter Plots Multiples
-**Fichier** : `scatter_plots.png`
+### Visualisation 3.1 : Scatter Plots - Prix vs Variables Clés
 
-**Description** : 6 nuages de points montrant la relation entre variables clés et prix.
+Six nuages de points révèlent les relations entre variables explicatives et prix.
 
-#### 3.1.1 : Prix vs Engine Size (Taille du moteur)
-**Interprétation** :
-- Relation **positive et quasi-linéaire**
-- Corrélation très forte (R ≈ 0.87)
-- Pas de valeurs aberrantes majeures
-- Quelques points s'écartent de la tendance (marques premium avec petit moteur mais prix élevé)
+#### Plot 3.1.1 : Prix vs Engine Size (Taille du moteur)
 
-#### 3.1.2 : Prix vs Horsepower (Puissance)
-**Interprétation** :
-- Relation **positive** mais avec **plus de dispersion**
-- Certains véhicules peu puissants sont chers (luxe, confort)
-- Certains véhicules puissants sont relativement abordables (sportives d'entrée de gamme)
+**Interprétations** :
+- Relation **positive quasi-linéaire** très nette
+- Corrélation visuelle très forte, confirmant le coefficient de 0.87
+- Peu de dispersion, la tendance est claire
+- Quelques points au-dessus de la ligne de tendance : marques premium avec petit moteur mais prix élevé (ex: voitures de luxe compactes)
 
-#### 3.1.3 : Prix vs Curb Weight (Poids)
-**Interprétation** :
-- Relation **positive et linéaire**
-- Les véhicules lourds sont systématiquement plus chers
-- Poids = proxy du segment (économique vs premium)
+#### Plot 3.1.2 : Prix vs Horsepower (Puissance)
 
-#### 3.1.4 : Prix vs Length (Longueur)
-**Interprétation** :
-- Relation positive mais **plus dispersée**
-- Les grandes berlines sont chères, mais pas toujours (breaks familiaux)
+**Interprétations** :
+- Relation positive avec **dispersion modérée**
+- Certains véhicules peu puissants (<100 HP) atteignent 15 000-20 000$ : véhicules axés luxe/confort plutôt que performance
+- Certains véhicules puissants (>150 HP) restent sous 15 000$ : sportives d'entrée de gamme
+- La puissance seule ne détermine pas tout le prix
 
-#### 3.1.5 : Prix vs Width (Largeur)
-**Interprétation** :
-- Relation similaire à la longueur
+#### Plot 3.1.3 : Prix vs Curb Weight (Poids)
+
+**Interprétations** :
+- Relation **positive et linéaire**, très nette
+- Le poids est un excellent prédicteur du prix
+- Les véhicules lourds (>3 500 lbs) sont systématiquement chers
+- Le poids reflète à la fois la taille, les matériaux et le segment
+
+#### Plot 3.1.4 : Prix vs Length (Longueur)
+
+**Interprétations** :
+- Relation positive mais avec **dispersion importante**
+- Les grandes berlines sont chères, mais pas systématiquement
+- Certains breaks familiaux sont longs mais abordables
+- La longueur seule est un prédicteur moins fiable
+
+#### Plot 3.1.5 : Prix vs Width (Largeur)
+
+**Interprétations** :
+- Tendance similaire à la longueur
 - Largeur = indicateur de confort et standing
+- Relation positive mais avec variabilité
 
-#### 3.1.6 : Prix vs City MPG (Consommation ville)
-**Interprétation** :
-- Relation **négative** : plus la consommation est faible (MPG élevé), plus le prix est bas
-- Les véhicules économiques consomment peu et coûtent peu
-- Les véhicules premium/sport consomment beaucoup et coûtent cher
+#### Plot 3.1.6 : Prix vs City MPG (Consommation ville)
+
+**Interprétations** :
+- Relation **négative claire** : plus le MPG est élevé (= consommation faible), plus le prix est bas
+- Les véhicules économiques (>30 MPG) sont concentrés sous 15 000$
+- Les véhicules de luxe/sport consomment beaucoup (15-25 MPG) et coûtent cher
+- Logique économique : performance et luxe vs économie de carburant
 
 ---
 
 ## 4. Détection des Outliers
 
-### Visualisation 4.1 : Boxplots des Outliers
-**Fichier** : `boxplots_outliers.png`
+### Visualisation 4.1 : Boxplots des Variables Clés
 
-**Description** : Boxplots pour détecter les valeurs aberrantes sur 6 variables clés.
+**Objectif** : Identifier les valeurs aberrantes sur 6 variables importantes.
 
-#### Outliers détectés :
+#### Price (Prix)
 
-**Prix** :
-- 3-5 véhicules > 35 000$ (voitures de sport/luxe comme Jaguar, Porsche)
-- Outliers légitimes, conservés
+**Outliers identifiés** :
+- Plusieurs véhicules au-dessus de 30 000$
+- Maximum à ~45 000$ (très probablement Porsche, Jaguar)
 
-**Engine Size** :
-- 2-3 moteurs > 250 cu.in (≈4.1L) : grosses cylindrées américaines/allemandes
-- Conservés (valeurs réelles)
+**Décision** : Conservés - ce sont des segments légitimes (luxe/sport)
 
-**Horsepower** :
-- Quelques véhicules > 200 HP : sportives
-- Conservés (segment légitime)
+#### Engine Size (Taille du moteur)
 
-**Curb Weight** :
-- Véhicules > 3500 lbs : SUV et berlines premium
-- Conservés
+**Outliers identifiés** :
+- 2-3 moteurs > 250 cubic inches (>4.1L)
+- Probablement des grosses cylindrées américaines ou allemandes
 
-**Length & Width** :
+**Décision** : Conservés - valeurs réelles
+
+#### Horsepower (Puissance)
+
+**Outliers identifiés** :
+- Quelques véhicules au-dessus de 200 HP
+- Maximum vers 260 HP (sportives)
+
+**Décision** : Conservés - segment légitime
+
+#### Curb Weight (Poids)
+
+**Outliers identifiés** :
+- Un véhicule dépassant 4 000 lbs
+- Probablement SUV ou grosse berline
+
+**Décision** : Conservé - valeur réaliste
+
+#### Length & Width
+
+**Outliers identifiés** :
 - Quelques véhicules particulièrement grands
-- Conservés (limousines, breaks)
+- Length > 200 inches, Width > 72 inches
 
-**Décision finale** : **Tous les outliers conservés** car ils représentent des segments réels du marché automobile.
+**Décision** : Conservés - limousines ou breaks
+
+**Conclusion générale** : Tous les outliers détectés représentent des segments réels du marché automobile et ont été conservés dans le dataset.
 
 ---
 
-## 5. Résultats des Modèles
+## 5. Résultats des Modèles de Prédiction
 
 ### Visualisation 5.1 : Régression Linéaire - Prédictions vs Réalité
-**Fichier** : `regression_lineaire_predictions.png`
 
-**Description** : Scatter plot des prédictions vs valeurs réelles, avec ligne de référence y=x.
+**Observation** : Scatter plot des prédictions vs valeurs réelles avec ligne de référence y=x.
 
-**Interprétation** :
-- Les points sont **proches de la ligne** y=x → bonnes prédictions
-- Légère dispersion pour les prix élevés (> 25 000$)
-- Quelques sous-estimations pour les véhicules très chers
-- Pas de biais systématique visible
+**Interprétations** :
+- Les points sont **globalement proches de la diagonale** → bonnes prédictions
+- Alignement correct pour les prix 5 000$ - 25 000$
+- **Dispersion visible pour les prix > 30 000$** : le modèle sous-estime plusieurs véhicules haut de gamme
+- Pas de biais systématique majeur
+- Quelques prédictions autour de 25 000-28 000$ pour des véhicules à 31 000$+
 
-**Performance** :
-- R² ≈ 0.88 : le modèle explique 88% de la variance
-- RMSE ≈ 2 800$ : erreur moyenne acceptable
-- Erreur % ≈ 12-14% : **objectif atteint**
+**Performance estimée** :
+- Erreur acceptable sur la majorité du dataset
+- Difficulté à capturer les spécificités des véhicules de luxe
+- Le modèle linéaire atteint ses limites sur les extrêmes
 
 ---
 
-### Visualisation 5.2 : Optimisation du paramètre k pour KNN
-**Fichier** : `knn_optimisation_k.png`
+### Visualisation 5.2 : Optimisation de k pour KNN
 
-**Description** : Courbe RMSE en fonction du nombre de voisins k.
+**Observation** : Courbe du RMSE en fonction du nombre de voisins k.
 
-**Interprétation** :
-- **k=3** : RMSE élevé (modèle trop complexe, sensible au bruit)
-- **k=5 à k=9** : RMSE minimal (bon équilibre biais-variance)
-- **k>15** : RMSE augmente (modèle trop simple, sous-apprentissage)
-- **Meilleur k** : entre 5 et 9 selon la validation croisée
+**Interprétations** :
+
+**k = 3** : RMSE très élevé (~3 600$)
+- Modèle trop sensible au bruit local
+- Surapprentissage probable
+
+**k = 5 à k = 11** : RMSE minimal (~4 000-4 130$)
+- Zone optimale : équilibre biais-variance
+- **k = 5 semble être le meilleur compromis**
+
+**k = 15 et k = 21** : RMSE augmente progressivement (>4 200$)
+- Modèle trop simple, sous-apprentissage
+- Les prédictions deviennent trop générales
 
 **Enseignement** :
-- K trop petit → surapprentissage (modèle mémorise les données)
-- K trop grand → sous-apprentissage (prédictions trop générales)
-- Le coude de la courbe indique le k optimal
+- Le "coude" de la courbe se situe autour de k=5
+- Au-delà de k=11, on perd en précision sans gagner en stabilité
+- Confirmation du principe biais-variance
 
 ---
 
-### Visualisation 5.3 : Arbre de Décision - Structure
-**Fichier** : `arbre_decision.png`
+### Visualisation 5.3 : Arbre de Décision - Visualisation Complète
 
-**Description** : Visualisation complète de l'arbre de décision (max_depth=5).
+**Observation** : Représentation de l'arbre de décision avec profondeur maximale de 5.
 
-**Interprétation** :
+**Analyse de la structure** :
 
 **Nœud racine** :
-- Première division sur **curb_weight** (poids) → variable la plus informative
-- Sépare immédiatement les véhicules économiques des véhicules premium
+- Première division sur **curb_weight ≤ 2650.0**
+- Confirmation : le poids est la variable la plus discriminante
 
-**Branches importantes** :
-- Branche gauche (véhicules légers) : divisions sur city_mpg, engine_size
-- Branche droite (véhicules lourds) : divisions sur horsepower, width
+**Branche gauche (véhicules légers)** :
+- Subdivisions sur curb_weight, body_style, stroke
+- Les feuilles prédisent des prix dans la gamme 6 000$ - 12 000$
+- Segment économique et compact
 
-**Feuilles** :
-- Véhicules économiques : prédictions ~7 000-10 000$
-- Véhicules premium : prédictions ~20 000-30 000$
-- Profondeur 5 limite le surapprentissage
+**Branche droite (véhicules lourds)** :
+- Subdivisions sur engine_size, width, make_encoded
+- Les feuilles prédisent des prix 10 000$ - 28 000$
+- Segment moyen à premium
 
-**Règles extraites** (exemples) :
-- Si poids < 2 400 lbs ET consommation > 30 mpg → prix ≈ 7 500$
-- Si poids > 3 000 lbs ET puissance > 120 HP → prix ≈ 22 000$
+**Règles extraites (exemples)** :
+- Si curb_weight ≤ 2221.5 ET body_style ≤ 2.5 → Prix ≈ 6 485$
+- Si curb_weight > 2650.0 ET engine_size > 188.5 → Prix ≈ 27 656$
 
 **Avantages** :
-- **Très interprétable** : on comprend exactement pourquoi une prédiction est faite
-- Adapté pour expliquer le modèle à un non-technicien
+- **Très interprétable** : chaque décision est explicite
+- Idéal pour expliquer les prédictions à un non-technicien
+- Profondeur 5 limite le surapprentissage
 
 ---
 
-### Visualisation 5.4 : Random Forest - Importance des Features
-**Fichier** : `random_forest_importance.png`
+### Visualisation 5.4 : Random Forest - Importance des Variables
 
-**Description** : Diagramme en barres des 15 features les plus importantes.
+**Observation** : Diagramme en barres des 15 features les plus importantes.
 
-**Interprétation** :
+**Top 5 des variables (>5% d'importance)** :
+1. **curb_weight** (~43%) : Variable dominante, représente presque la moitié de l'importance
+2. **engine_size** (~32%) : Deuxième facteur majeur
+3. **horsepower** (~6.5%) : Important mais loin derrière les deux premiers
+4. **highway_mpg** (~6.4%) : Consommation autoroutière
+5. **city_mpg** (~3.8%) : Consommation urbaine
 
-**Top 5 des features** (importance > 15%) :
-1. **curb_weight** (25-30%) : poids du véhicule
-2. **engine_size** (15-20%) : taille du moteur
-3. **horsepower** (10-15%) : puissance
-4. **width** (8-12%) : largeur
-5. **highway_mpg** (6-10%) : consommation autoroute
+**Variables moyennement importantes (1-3%)** :
+- width, make_encoded, wheel_base
 
-**Features moyennement importantes** (5-8%) :
-- length, city_mpg, compression_ratio
-
-**Features peu importantes** (< 5%) :
-- num_cylinders_encoded, body_style_encoded, drive_wheels_encoded
+**Variables peu importantes (<1%)** :
+- peak_rpm, length, height, bore, stroke, drive_wheels_encoded, compression_ratio
 
 **Insights** :
-- Les caractéristiques **physiques et techniques** dominent
-- Les caractéristiques **catégorielles** (marque, style) ont moins d'impact que prévu
-  - Possible biais de l'encodage label (one-hot aurait mieux capturé)
-- La **puissance et le poids** sont les déterminants principaux du prix
+- **Domination écrasante** du poids et de la taille du moteur (75% d'importance combinée)
+- Les caractéristiques physiques primordiales
+- Les variables catégorielles (marque, style) ont un impact limité avec l'encodage label
+- L'encodage one-hot aurait probablement donné plus d'importance à la marque
 
 **Comparaison avec la corrélation** :
 - Cohérence totale : les variables corrélées au prix sont bien les plus importantes
-- Random Forest confirme l'analyse exploratoire
+- Random Forest confirme l'analyse exploratoire initiale
 
 ---
 
 ## 6. Validation et Diagnostics
 
 ### Visualisation 6.1 : Courbes d'Apprentissage - Random Forest
-**Fichier** : `courbes_apprentissage.png`
 
-**Description** : Évolution du RMSE train et validation en fonction du nombre d'exemples d'entraînement.
+**Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset.
 
-**Interprétation** :
+**Début de courbe (10-20 exemples)** :
+- RMSE train très faible (~5 700$)
+- RMSE validation très élevé (~6 800$)
+- **Gap énorme** : surapprentissage massif avec peu de données
 
-**Début de la courbe** (10-20% des données) :
-- RMSE train très faible (~500$) → le modèle mémorise parfaitement
-- RMSE validation très élevé (~5 000$) → surapprentissage massif
-- **Gap important** entre train et validation
+**Milieu de courbe (40-80 exemples)** :
+- RMSE train augmente progressivement (~1 900$)
+- RMSE validation **diminue fortement** (~3 200$)
+- Le gap se réduit significativement
 
-**Milieu de la courbe** (40-60% des données) :
-- RMSE train augmente légèrement (~1 500$)
-- RMSE validation **diminue fortement** (~3 000$)
-- Gap se réduit progressivement
-
-**Fin de la courbe** (100% des données) :
-- RMSE train ≈ 1 800-2 000$
-- RMSE validation ≈ 2 200-2 500$
-- **Convergence** : les courbes sont proches
+**Fin de courbe (120-160 exemples)** :
+- RMSE train stable (~1 600$)
+- RMSE validation converge (~2 600$)
+- **Gap réduit** : les courbes se rapprochent
 
 **Diagnostic** :
-- ✅ **Pas de sous-apprentissage** : les performances ne sont pas au plancher
-- ✅ **Peu de surapprentissage** : gap réduit entre train et validation
-- ✅ **Le modèle généralise bien**
-- ⚠️ Plateau atteint : plus de données n'améliorerait que marginalement
+- ✅ **Pas de sous-apprentissage** : les scores ne sont pas au plancher
+- ✅ **Surapprentissage limité** : gap final acceptable entre train et validation
+- ✅ **Le modèle généralise bien** avec le dataset complet
+- ⚠️ **Plateau atteint** : plus de données n'améliorerait que marginalement les performances
 
-**Conclusion** : Le Random Forest avec 100 arbres et max_depth=10 est bien calibré pour ce dataset.
+**Conclusion** : Le Random Forest avec 100 arbres et max_depth=10 est bien calibré pour ce dataset de 201 véhicules.
 
 ---
 
-## 7. Clustering
+## 7. Clustering - Segmentation du Marché
 
 ### Visualisation 7.1 : Méthode du Coude - K-means
-**Fichier** : `kmeans_coude.png`
 
-**Description** : Courbe de l'inertie en fonction du nombre de clusters k.
+**Observation** : Courbe de l'inertie (somme des distances intra-cluster) en fonction de k.
 
-**Interprétation** :
+**Analyse** :
 
-**Inertie** : somme des distances au carré entre chaque point et son centroïde.
+**k = 2** : Inertie très élevée (~335)
+- Seulement 2 clusters, trop large, perte d'information
 
-**Évolution** :
-- k=2 : inertie très élevée (~18 000) → clusters trop larges
-- k=3 : inertie descend à ~12 000 → amélioration significative
-- **k=4** : inertie ≈ 8 000 → **coude visible**
-- k=5 à k=10 : décroissance plus lente
+**k = 3** : Inertie descend à ~190
+- Amélioration significative (-43%)
 
-**Choix du k optimal** : **k=4**
-- Point où la courbe forme un angle (coude)
-- Compromis entre simplicité (peu de clusters) et précision (inertie faible)
+**k = 4** : Inertie ~145
+- **Coude visible** : point d'inflexion de la courbe
+- Amélioration notable mais la décroissance ralentit
 
-**Interprétation métier** : 4 segments de marché distincts.
+**k = 5 à k = 10** : Inertie continue de baisser progressivement
+- Amélioration marginale décroissante
+- Complexité accrue sans gain proportionnel
+
+**Choix optimal** : **k = 4 clusters**
+- Point où le rapport amélioration/complexité est optimal
+- Interprétation métier : 4 segments de marché distincts
 
 ---
 
-### Visualisation 7.2 : Clusters Visualisés
-**Fichier** : `clusters_visualisation.png`
+### Visualisation 7.2 : Visualisation des Clusters
 
 **Description** : Deux scatter plots colorés par cluster.
 
-#### Plot 1 : Taille moteur vs Puissance
-**Interprétation** :
+#### Plot gauche : Taille moteur vs Puissance
 
-**Cluster 0 (violet/bleu foncé)** :
-- Petits moteurs (<100 cu.in), faible puissance (<80 HP)
+**Cluster 0 (jaune)** :
+- Petits moteurs (50-80 cu.in), faible puissance (45-80 HP)
 - **Segment économique** : citadines, compactes
-- Exemples : Honda Civic, Toyota Corolla
+- Exemples : Honda Civic, Toyota Corolla, petites Mazda
 
-**Cluster 1 (vert)** :
-- Moteurs moyens (100-150 cu.in), puissance moyenne (80-120 HP)
-- **Segment familial** : berlines moyennes, breaks
-- Exemples : Volkswagen Passat, Nissan Maxima
+**Cluster 1 (bleu clair)** :
+- Moteurs moyens (90-130 cu.in), puissance moyenne (80-110 HP)
+- **Segment familial** : berlines moyennes, véhicules polyvalents
+- Exemples : Volkswagen, Nissan Maxima, Honda Accord
 
-**Cluster 2 (jaune)** :
-- Moteurs moyens/gros (120-180 cu.in), puissance élevée (120-160 HP)
-- **Segment sportif** : coupés, sportives
-- Exemples : Mazda RX-7, Alfa Romeo
+**Cluster 2 (violet/mauve)** :
+- Moteurs moyens/gros (140-180 cu.in), puissance élevée (110-160 HP)
+- **Segment sportif/premium** : coupés sportifs, berlines dynamiques
+- Exemples : Mazda RX-7, Alfa Romeo, BMW entrée de gamme
 
-**Cluster 3 (rouge)** :
+**Cluster 3 (vert/turquoise)** :
 - Gros moteurs (>180 cu.in), très haute puissance (>160 HP)
-- **Segment premium/luxe** : berlines haut de gamme, sportives de luxe
-- Exemples : BMW Série 7, Mercedes, Jaguar
+- **Segment luxe/sport** : grosses berlines, sportives haut de gamme
+- Exemples : BMW Série 7, Mercedes, Jaguar, Porsche
 
-**Séparation claire** : les clusters sont bien distincts, peu de chevauchement.
+**Séparation** : Les clusters sont bien distincts avec peu de chevauchement.
 
-#### Plot 2 : Poids vs Prix
-**Interprétation** :
+#### Plot droit : Poids vs Prix
 
 **Relation cluster-prix** :
-- Cluster 0 : poids <2 500 lbs, prix 5 000-12 000$ → économiques
-- Cluster 1 : poids 2 500-3 000 lbs, prix 10 000-18 000$ → moyens
-- Cluster 2 : poids 2 800-3 200 lbs, prix 15 000-25 000$ → sportifs
-- Cluster 3 : poids >3 000 lbs, prix >20 000$ → premium/luxe
+
+**Cluster 0 (jaune)** :
+- Poids : 1 500-2 300 lbs
+- Prix : 5 000-10 000$
+- **Véhicules économiques**
+
+**Cluster 1 (bleu)** :
+- Poids : 2 300-2 800 lbs
+- Prix : 8 000-17 000$
+- **Véhicules familiaux**
+
+**Cluster 2 (violet)** :
+- Poids : 2 500-3 200 lbs
+- Prix : 12 000-25 000$
+- **Véhicules sportifs/premium**
+
+**Cluster 3 (vert)** :
+- Poids : 3 000-4 000 lbs
+- Prix : 20 000-45 000$
+- **Véhicules luxe/sport haut de gamme**
 
 **Insights marketing** :
-- Segmentation claire du marché automobile
-- Possibilité de stratégies marketing ciblées par cluster
-- Chaque cluster a des caractéristiques techniques et prix distincts
+- Segmentation claire et exploitable commercialement
+- Chaque cluster correspond à un persona client différent
+- Stratégies marketing et pricing adaptables par cluster
+- Les 4 segments reflètent la réalité du marché automobile
 
 ---
 
 ### Visualisation 7.3 : Dendrogramme - Classification Hiérarchique
-**Fichier** : `dendrogramme.png`
 
-**Description** : Arbre hiérarchique montrant les fusions successives de 50 véhicules.
-
-**Interprétation** :
+**Observation** : Arbre hiérarchique montrant les fusions successives de 50 véhicules.
 
 **Lecture** :
-- Axe horizontal : index des véhicules
-- Axe vertical : distance de fusion (dissimilarité)
-- Branches longues : véhicules très différents
-- Branches courtes : véhicules similaires
+- Axe horizontal : index des véhicules (0-50)
+- Axe vertical : distance de fusion (mesure de dissimilarité)
+- Hauteur de fusion : plus elle est élevée, plus les groupes sont différents
 
-**Observations** :
-- **Groupes naturels** : certains véhicules se regroupent rapidement (faible distance)
-- **4 grands clusters** : si on coupe à hauteur ≈ 15, on retrouve 4 groupes
-- Cohérence avec K-means
+**Analyse** :
+
+**Niveau bas (distance 0-5)** :
+- Fusions rapides de véhicules très similaires
+- Plusieurs petits groupes de 2-4 véhicules (même modèle, motorisation différente)
+- Exemples : véhicules 46-44-45 forment un groupe homogène
+
+**Niveau moyen (distance 5-10)** :
+- Regroupements de sous-segments
+- Formation de clusters plus larges
+
+**Niveau haut (distance 10-20)** :
+- Fusions majeures entre grands groupes
+- Si on coupe à hauteur ~10-15, on obtient **4 grands clusters**
+- Cohérence avec la méthode K-means
+
+**Véhicules isolés** :
+- Certaines branches s'isolent tardivement (ex: indices 46, 22)
+- Ce sont des véhicules atypiques ou outliers
 
 **Avantages du dendrogramme** :
-- Vision hiérarchique complète
-- Permet de choisir le niveau de granularité
-- Identifie les véhicules "outliers" (branches isolées)
-
-**Exemple** : Les véhicules 5, 12, 18 se regroupent très tôt → véhicules très similaires (même segment, même marque potentiellement).
+- Vision hiérarchique complète de la structure des données
+- Permet de choisir le niveau de granularité souhaité
+- Identifie les véhicules similaires et les outliers
+- Complément visuel à K-means
 
 ---
 
-## 8. Comparaisons Finales
+## 8. Comparaison Finale des Modèles
 
-### Visualisation 8.1 : Comparaison des Modèles - Métriques Multiples
-**Fichier** : `comparaison_modeles.png`
-
-**Description** : 4 subplots comparant les 5 modèles sur différentes métriques.
+### Visualisation 8.1 : Métriques de Performance - 4 Subplots
 
 #### Subplot 1 : RMSE Test par Modèle
-**Interprétation** :
-- **Gradient Boosting** : RMSE le plus faible (~2 100$) ⭐
-- **Random Forest** : RMSE très bon (~2 200$) ⭐
-- **KNN** : RMSE correct (~2 600$)
-- **Régression Linéaire** : RMSE moyen (~2 800$)
-- **Arbre de Décision** : RMSE le plus élevé (~3 200$)
 
-**Classement** : GB > RF > KNN > LR > Arbre
+**Classement** (du meilleur au moins bon) :
+1. **Random Forest** : ~2 195$ ⭐ Meilleur RMSE
+2. **Gradient Boosting** : ~2 383$
+3. **Arbre de Décision** : ~2 856$
+4. **Régression Linéaire** : ~4 660$
+5. **KNN** : ~5 407$ ❌ Pire RMSE
+
+**Interprétation** :
+- Random Forest domine avec une marge confortable
+- Les modèles ensemblistes (RF, GB) surclassent les modèles simples
+- KNN performe mal, probablement à cause de la dimensionnalité
 
 #### Subplot 2 : R² Test par Modèle
-**Interprétation** :
-- **Gradient Boosting** : R² ≈ 0.93 (explique 93% de la variance) ⭐
-- **Random Forest** : R² ≈ 0.92 ⭐
-- **KNN** : R² ≈ 0.89
-- **Régression Linéaire** : R² ≈ 0.88
-- **Arbre de Décision** : R² ≈ 0.84
 
-**Insight** : Les modèles ensemblistes dominent largement.
+**Classement** :
+1. **Random Forest** : R² ≈ 0.96 ⭐ Explique 96% de la variance
+2. **Gradient Boosting** : R² ≈ 0.95
+3. **Arbre de Décision** : R² ≈ 0.93
+4. **Régression Linéaire** : R² ≈ 0.82
+5. **KNN** : R² ≈ 0.76
 
-#### Subplot 3 : Comparaison Train vs Test
 **Interprétation** :
+- Random Forest et Gradient Boosting ont un pouvoir prédictif excellent
+- Même l'Arbre de Décision simple atteint 93% d'explication
+- Les modèles linéaires sont limités par la non-linéarité des relations
+
+#### Subplot 3 : Comparaison Train vs Test (RMSE)
+
+**Analyse par modèle** :
+
+**Régression Linéaire** :
+- RMSE Train : ~2 391$
+- RMSE Test : ~4 660$
+- **Gap important** → Variance élevée
+
+**KNN** :
+- RMSE Train : ~2 026$
+- RMSE Test : ~5 407$
+- **Gap très important** → Surapprentissage sévère
 
 **Arbre de Décision** :
-- RMSE train très faible, RMSE test élevé
-- **Gap important** → surapprentissage visible
+- RMSE Train : ~1 920$
+- RMSE Test : ~2 856$
+- Gap modéré → Léger surapprentissage
 
-**Régression Linéaire et KNN** :
-- Gap modéré → bon équilibre
+**Random Forest** :
+- RMSE Train : ~1 532$
+- RMSE Test : ~2 195$
+- **Gap minimal** → Excellent équilibre ✅
 
-**Random Forest et Gradient Boosting** :
-- Léger gap → excellent équilibre
-- Généralisation optimale
+**Gradient Boosting** :
+- RMSE Train : ~341$
+- RMSE Test : ~2 383$
+- **Gap énorme** → Surapprentissage massif ⚠️
+
+**Enseignement** : Random Forest offre le meilleur compromis généralisation/performance.
 
 #### Subplot 4 : Erreur % par Modèle
-**Interprétation** :
-- Ligne rouge pointillée : **objectif 15%**
-- **Gradient Boosting** : ~9-10% ✅ Objectif largement atteint
-- **Random Forest** : ~10-11% ✅ Objectif atteint
-- **KNN** : ~12-13% ✅ Objectif atteint
-- **Régression Linéaire** : ~13-14% ✅ Objectif atteint (limite)
-- **Arbre de Décision** : ~15-16% ⚠️ Objectif non atteint
 
-**Conclusion** : 4 modèles sur 5 atteignent l'objectif de <15% d'erreur.
+**Ligne rouge pointillée** : Objectif de 15% d'erreur
+
+**Classement** :
+1. **Gradient Boosting** : ~9.4% ✅ Objectif largement dépassé
+2. **Random Forest** : ~9.6% ✅ Objectif dépassé
+3. **Arbre de Décision** : ~11.5% ✅ Objectif atteint
+4. **Régression Linéaire** : ~20.2% ❌ Objectif non atteint
+5. **KNN** : ~20.2% ❌ Objectif non atteint
+
+**Conclusion** : 3 modèles sur 5 atteignent l'objectif de moins de 15% d'erreur.
 
 ---
 
 ### Visualisation 8.2 : Prédictions vs Réalité - Tous les Modèles
-**Fichier** : `predictions_tous_modeles.png`
 
-**Description** : 5 scatter plots (un par modèle) comparant prédictions et valeurs réelles.
+**Description** : 5 scatter plots comparant prédictions et valeurs réelles pour chaque modèle.
 
-#### Analyse comparative :
+#### Régression Linéaire
 
-**Régression Linéaire** :
-- Points alignés sur la diagonale
-- Légère dispersion uniforme
-- Quelques sous-estimations pour prix élevés
+**Observations** :
+- Alignement général correct sur la diagonale
+- Dispersion uniforme autour de la ligne
+- Sous-estimation marquée pour les prix > 30 000$
+- Quelques surestimations pour les prix bas
 
-**KNN** :
-- Alignement similaire
-- Légèrement plus de dispersion que LR
-- Effet "escalier" visible (prédictions discrètes basées sur voisins)
+#### KNN
 
-**Arbre de Décision** :
+**Observations** :
+- Alignement similaire à la régression linéaire
 - **Dispersion plus importante**
-- Prédictions parfois éloignées de la diagonale
-- Effet plateau (prédictions constantes dans les feuilles)
-- Surapprentissage visible
+- Effet "escalier" visible : prédictions discrètes basées sur moyennes de voisins
+- Difficultés sur les extrêmes
 
-**Random Forest** :
-- **Excellent alignement**
-- Dispersion minimale
-- Peu d'erreurs majeures
-- Prédictions lisses (moyenne de 100 arbres)
+#### Arbre de Décision
 
-**Gradient Boosting** :
-- **Meilleur alignement de tous**
+**Observations** :
+- Alignement globalement bon
+- **Effet plateau** : prédictions constantes dans les feuilles de l'arbre
+- Quelques prédictions éloignées de la diagonale
+- Dispersion modérée
+
+#### Random Forest
+
+**Observations** :
+- **Excellent alignement** sur toute la gamme de prix ⭐
+- Dispersion minimale autour de la diagonale
+- Très peu d'erreurs majeures
+- Prédictions lisses grâce à l'agrégation de 100 arbres
+- Performance homogène sur tous les segments de prix
+
+#### Gradient Boosting
+
+**Observations** :
+- **Meilleur alignement visuel** de tous les modèles ⭐
 - Dispersion très faible
 - Prédictions très précises
 - Pas de biais systématique visible
+- Légèrement meilleur que Random Forest visuellement
 
-**Comparaison visuelle** :
-- GB ≈ RF >> KNN ≈ LR >> Arbre
-- Les modèles ensemblistes produisent des prédictions bien plus concentrées autour de la diagonale
+**Comparaison visuelle globale** :
+- GB ≈ RF >>> Arbre > LR ≈ KNN
+- Les modèles ensemblistes produisent des nuages de points beaucoup plus concentrés autour de la diagonale
+- La différence de qualité est visuellement évidente
 
 ---
 
-## Synthèse Générale des Visualisations
+## 9. Synthèse et Recommandations
 
 ### Points Clés Identifiés
 
-#### 1. Structure des données
-- Distribution asymétrique des prix (majorité <20k$, queue >30k$)
-- Variables techniques (moteur, poids, puissance) dominent
-- Segmentation naturelle en 4 catégories de véhicules
+#### Structure des données
+- Distribution asymétrique des prix avec concentration 5 000-15 000$
+- Dataset de 201 véhicules avec 26 variables
+- 4 segments naturels de marché identifiés par clustering
 
-#### 2. Relations importantes
-- **Corrélations fortes** : engine_size (0.87), curb_weight (0.84), horsepower (0.81)
-- **Relations non-linéaires** : certaines variables montrent des patterns complexes
-- **Multicolinéarité** : dimensions du véhicule fortement corrélées entre elles
+#### Variables déterminantes
+- **Top 3** : curb_weight (0.83), engine_size (0.87), horsepower (0.81)
+- Forte multicolinéarité entre dimensions physiques
+- Variables catégorielles moins discriminantes avec encodage label
 
-#### 3. Qualité des modèles
-- **Gradient Boosting** : meilleur sur toutes les métriques (R²=0.93, erreur=9%)
-- **Random Forest** : très proche, plus stable (R²=0.92, erreur=10%)
-- **Régression Linéaire** : surprenamment efficace malgré la non-linéarité (R²=0.88)
-- **Arbre unique** : surapprentissage évident, performances limitées
+#### Performance des modèles
+- **Meilleur modèle global** : Random Forest (RMSE test = 2 195$, R² = 0.96, erreur = 9.6%)
+- **Alternative** : Gradient Boosting (légèrement surapprentissage mais excellent sur test)
+- **Modèle le plus interprétable** : Arbre de Décision (performance acceptable : 11.5% erreur)
+- **Modèles inadaptés** : Régression Linéaire et KNN (>20% erreur)
 
-#### 4. Validation
-- Courbes d'apprentissage montrent une convergence saine
-- Validation croisée confirme la stabilité des modèles ensemblistes
-- Peu de surapprentissage pour RF et GB
+#### Validation
+- Courbes d'apprentissage saines pour Random Forest
+- Validation croisée confirme la stabilité
+- Objectif de <15% d'erreur atteint par 3 modèles
 
-#### 5. Clustering
-- 4 segments distincts : économique, familial, sportif, luxe
-- Segmentation cohérente avec les caractéristiques techniques et prix
-- Utilité marketing évidente
+#### Segmentation marché
+- 4 clusters distincts : économique, familial, sportif/premium, luxe
+- Segmentation exploitable commercialement
+- Cohérence entre K-means et classification hiérarchique
 
----
+### Modèle Recommandé : Random Forest
 
-## Recommandations pour la Présentation
+**Justification** :
+1. **Meilleur RMSE test** (2 195$) et **meilleur R²** (0.96)
+2. **Erreur de 9.6%** : largement sous l'objectif de 15%
+3. **Équilibre train/test optimal** : pas de surapprentissage
+4. **Robustesse** : performance stable en validation croisée
+5. **Interprétabilité acceptable** : importance des variables accessible
 
-### Visualisations essentielles à présenter :
-1. ✅ **Matrice de corrélation** : montre les relations clés
-2. ✅ **Scatter plots** : illustre les relations prix-features
-3. ✅ **Courbes d'apprentissage** : prouve la généralisation
-4. ✅ **Comparaison modèles** : justifie le choix du meilleur
-5. ✅ **Clusters** : montre la segmentation du marché
+**Limites** :
+- Moins interprétable qu'un arbre unique
+- Temps d'entraînement plus long
+- Boîte noire relative
 
-### Messages clés à transmettre :
-- Les données révèlent une structure claire avec 4 segments
-- Les caractéristiques physiques (poids, moteur) dominent le prix
+### Visualisations Essentielles pour Présentation
+
+1. ✅ **Matrice de corrélation** : montre les relations clés entre variables
+2. ✅ **Scatter plots** : illustre les relations prix-features principales
+3. ✅ **Courbes d'apprentissage** : prouve la généralisation du modèle
+4. ✅ **Comparaison modèles** (4 subplots) : justifie le choix de Random Forest
+5. ✅ **Clusters visualisation** : démontre la segmentation du marché
+
+### Messages Clés
+
+- Le poids et la taille du moteur expliquent 75% de l'importance dans Random Forest
 - Les modèles ensemblistes surpassent largement les modèles simples
-- L'objectif de <15% d'erreur est atteint par 4 modèles sur 5
-- Le Random Forest offre le meilleur compromis performance/interprétabilité
+- L'objectif de <15% d'erreur est dépassé avec 9.6% d'erreur moyenne
+- 4 segments de marché distincts ont été identifiés
+- Le modèle Random Forest offre le meilleur compromis performance/robustesse/interprétabilité
 
 ---
 
 ## Conclusion
 
-Les visualisations produites dans ce projet permettent de :
-1. **Comprendre** la structure des données et les relations entre variables
-2. **Justifier** les décisions de prétraitement et modélisation
-3. **Évaluer** objectivement les performances des modèles
-4. **Communiquer** les résultats de manière claire et convaincante
+Les visualisations produites dans ce projet démontrent une démarche méthodique et rigoureuse conforme aux standards de la Data Science. L'analyse a permis de :
 
-L'ensemble des graphiques démontre une démarche rigoureuse et méthodique, conforme aux standards de la Data Science.
+1. **Comprendre** la structure des données et identifier les variables clés
+2. **Justifier** les décisions de prétraitement (conservation des outliers, gestion des valeurs manquantes)
+3. **Évaluer** objectivement 5 modèles de régression différents
+4. **Valider** la généralisation du meilleur modèle (Random Forest)
+5. **Segmenter** le marché en 4 clusters exploitables
+6. **Atteindre** l'objectif fixé : erreur < 15% (résultat : 9.6%)
+
+Le modèle Random Forest retenu prédit le prix des voitures d'occasion avec une précision de 90.4% et un R² de 0.96, dépassant largement les attentes initiales du projet.
 
 ---
 
-**Auteurs** : Matteo Robin, Florian Huguet
-**Date** : Décembre 2025
+**Projet réalisé par Florian Huguet et Matteo Robin dans le cadre du cours d'initiation au Data Science et Machine Learning - Décembre 2025**
