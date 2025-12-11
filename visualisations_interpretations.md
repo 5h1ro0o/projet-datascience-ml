@@ -93,27 +93,26 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 **Observation** : La heatmap révèle les relations entre toutes les variables numériques du dataset.
 
 **Corrélations fortes avec le prix (> 0.75)** :
-1. **curb_weight** (0.83) : Le poids du véhicule est fortement corrélé au prix
-2. **engine_size** (0.87) : La taille du moteur est le prédicteur le plus corrélé
-3. **horsepower** (0.81) : La puissance est directement liée au prix
-4. **width** (0.75) : La largeur du véhicule indique le segment
+1. **engine_size** (0.872) : La taille du moteur est le prédicteur le plus corrélé
+2. **curb_weight** (0.834) : Le poids du véhicule est fortement corrélé au prix
+3. **horsepower** (0.811) : La puissance est directement liée au prix
+4. **width** (0.751) : La largeur du véhicule indique le segment
 
 **Corrélations moyennes (0.50 - 0.75)** :
-- **length** (0.69) : Longueur du véhicule
-- **wheel_base** (0.58) : Empattement
-- **height** (0.14) : Corrélation faible, la hauteur n'est pas un bon prédicteur
+- **highway_mpg** (0.705) : Consommation autoroutière
+- **length** (0.691) : Longueur du véhicule
+- **city_mpg** (0.687) : Consommation urbaine
+- **wheel_base** (0.585) : Empattement
+- **bore** (0.543) : Alésage du cylindre
 
-**Corrélations négatives** :
-- **city_mpg** (-0.69) : Plus la consommation est économique, plus le prix est bas
-- **highway_mpg** (-0.70) : Même tendance pour l'autoroute
-- **peak_rpm** (-0.10) : Corrélation néglige able
+**Note sur les corrélations de consommation** :
+Les valeurs positives de city_mpg et highway_mpg dans la matrice indiquent une corrélation avec les autres variables. La relation inverse avec le prix (plus économique = moins cher) est visible dans les scatter plots
 
-**Multicolinéarité détectée** :
-- **curb_weight ↔ engine_size** (0.93) : Très forte corrélation
-- **length ↔ wheel_base** (0.87) : Les dimensions sont liées
-- **width ↔ length** (0.84) : Idem
-- **city_mpg ↔ highway_mpg** (0.97) : Redondance presque totale
-- **engine_size ↔ horsepower** (0.81) : Attendu physiquement
+**Multicolinéarité visible** :
+- Les dimensions du véhicule sont fortement corrélées entre elles
+- La taille du moteur, le poids et la puissance sont interdépendants
+- Les consommations ville/autoroute sont très liées
+- Cette multicolinéarité est attendue et normale pour des véhicules
 
 **Implications pour la modélisation** :
 - La multicolinéarité peut déstabiliser les coefficients de la régression linéaire
@@ -254,22 +253,24 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Interprétations** :
 
-**k = 3** : RMSE très élevé (~3 600$)
-- Modèle trop sensible au bruit local
-- Surapprentissage probable
+**k = 3** : RMSE = 3 612.82$
+- Meilleur RMSE en validation croisée
+- Mais risque de surapprentissage avec peu de voisins
 
-**k = 5 à k = 11** : RMSE minimal (~4 000-4 130$)
-- Zone optimale : équilibre biais-variance
-- **k = 5 semble être le meilleur compromis**
+**k = 5** : RMSE = 4 000.78$
+- Légère augmentation du RMSE
 
-**k = 15 et k = 21** : RMSE augmente progressivement (>4 200$)
+**k = 7 à k = 11** : RMSE = 4 112$ - 4 165$
+- Zone de stabilité
+
+**k = 15 et k = 21** : RMSE = 4 231$ - 4 331$
 - Modèle trop simple, sous-apprentissage
 - Les prédictions deviennent trop générales
 
 **Enseignement** :
-- Le "coude" de la courbe se situe autour de k=5
-- Au-delà de k=11, on perd en précision sans gagner en stabilité
-- Confirmation du principe biais-variance
+- **k = 3 donne le meilleur RMSE** en validation croisée
+- La courbe montre une augmentation progressive au-delà de k=3
+- Confirmation du principe biais-variance : k petit = surapprentissage, k grand = sous-apprentissage
 
 ---
 
@@ -308,21 +309,22 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Observation** : Diagramme en barres des 15 features les plus importantes.
 
-**Top 5 des variables (>5% d'importance)** :
-1. **curb_weight** (~43%) : Variable dominante, représente presque la moitié de l'importance
-2. **engine_size** (~32%) : Deuxième facteur majeur
-3. **horsepower** (~6.5%) : Important mais loin derrière les deux premiers
-4. **highway_mpg** (~6.4%) : Consommation autoroutière
-5. **city_mpg** (~3.8%) : Consommation urbaine
+**Top 10 des variables (valeurs exactes)** :
+1. **curb_weight** : 0.432 (43.2%) - Variable dominante
+2. **engine_size** : 0.317 (31.7%) - Deuxième facteur majeur
+3. **horsepower** : 0.065 (6.5%)
+4. **highway_mpg** : 0.064 (6.4%)
+5. **city_mpg** : 0.038 (3.8%)
+6. **width** : 0.028 (2.8%)
+7. **make_encoded** : 0.020 (2.0%)
+8. **wheel_base** : 0.010 (1.0%)
+9. **peak_rpm** : 0.007 (0.7%)
+10. **length** : 0.005 (0.5%)
 
-**Variables moyennement importantes (1-3%)** :
-- width, make_encoded, wheel_base
-
-**Variables peu importantes (<1%)** :
-- peak_rpm, length, height, bore, stroke, drive_wheels_encoded, compression_ratio
+**Variables restantes** : < 0.5% chacune
 
 **Insights** :
-- **Domination écrasante** du poids et de la taille du moteur (75% d'importance combinée)
+- **Domination écrasante** du poids et de la taille du moteur (74.9% d'importance combinée)
 - Les caractéristiques physiques primordiales
 - Les variables catégorielles (marque, style) ont un impact limité avec l'encodage label
 - L'encodage one-hot aurait probablement donné plus d'importance à la marque
@@ -339,19 +341,19 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset.
 
-**Début de courbe (10-20 exemples)** :
-- RMSE train très faible (~5 700$)
-- RMSE validation très élevé (~6 800$)
+**Début de courbe (16 exemples, 10%)** :
+- RMSE train très faible (environ 5 700$)
+- RMSE validation très élevé (environ 6 800$)
 - **Gap énorme** : surapprentissage massif avec peu de données
 
-**Milieu de courbe (40-80 exemples)** :
-- RMSE train augmente progressivement (~1 900$)
-- RMSE validation **diminue fortement** (~3 200$)
+**Milieu de courbe (48-80 exemples, 30-50%)** :
+- RMSE train augmente progressivement (vers 1 900$)
+- RMSE validation **diminue fortement** (vers 3 600$ puis 3 200$)
 - Le gap se réduit significativement
 
-**Fin de courbe (120-160 exemples)** :
-- RMSE train stable (~1 600$)
-- RMSE validation converge (~2 600$)
+**Fin de courbe (128-160 exemples, 80-100%)** :
+- RMSE train stable (environ 1 550-1 600$)
+- RMSE validation converge (environ 2 600$)
 - **Gap réduit** : les courbes se rapprochent
 
 **Diagnostic** :
@@ -372,13 +374,13 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Analyse** :
 
-**k = 2** : Inertie très élevée (~335)
+**k = 2** : Inertie très élevée (environ 335)
 - Seulement 2 clusters, trop large, perte d'information
 
-**k = 3** : Inertie descend à ~190
-- Amélioration significative (-43%)
+**k = 3** : Inertie descend à environ 193
+- Amélioration significative
 
-**k = 4** : Inertie ~145
+**k = 4** : Inertie environ 147
 - **Coude visible** : point d'inflexion de la courbe
 - Amélioration notable mais la décroissance ralentit
 
@@ -474,7 +476,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Niveau haut (distance 10-20)** :
 - Fusions majeures entre grands groupes
-- Si on coupe à hauteur ~10-15, on obtient **4 grands clusters**
+- Si on coupe à hauteur 10-15, on obtient **4 grands clusters**
 - Cohérence avec la méthode K-means
 
 **Véhicules isolés** :
@@ -496,11 +498,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Subplot 1 : RMSE Test par Modèle
 
 **Classement** (du meilleur au moins bon) :
-1. **Random Forest** : ~2 195$ ⭐ Meilleur RMSE
-2. **Gradient Boosting** : ~2 383$
-3. **Arbre de Décision** : ~2 856$
-4. **Régression Linéaire** : ~4 660$
-5. **KNN** : ~5 407$ ❌ Pire RMSE
+1. **Random Forest** : 2 195.18$ ⭐ Meilleur RMSE
+2. **Gradient Boosting** : 2 383.14$
+3. **Arbre de Décision** : 2 855.92$
+4. **Régression Linéaire** : 4 660.42$
+5. **KNN** : 5 406.69$ ❌ Pire RMSE
 
 **Interprétation** :
 - Random Forest domine avec une marge confortable
@@ -510,11 +512,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 #### Subplot 2 : R² Test par Modèle
 
 **Classement** :
-1. **Random Forest** : R² ≈ 0.96 ⭐ Explique 96% de la variance
-2. **Gradient Boosting** : R² ≈ 0.95
-3. **Arbre de Décision** : R² ≈ 0.93
-4. **Régression Linéaire** : R² ≈ 0.82
-5. **KNN** : R² ≈ 0.76
+1. **Random Forest** : R² = 0.9606 ⭐ Explique 96.06% de la variance
+2. **Gradient Boosting** : R² = 0.9536 (95.36%)
+3. **Arbre de Décision** : R² = 0.9333 (93.33%)
+4. **Régression Linéaire** : R² = 0.8225 (82.25%)
+5. **KNN** : R² = 0.7611 (76.11%)
 
 **Interprétation** :
 - Random Forest et Gradient Boosting ont un pouvoir prédictif excellent
@@ -526,29 +528,29 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Analyse par modèle** :
 
 **Régression Linéaire** :
-- RMSE Train : ~2 391$
-- RMSE Test : ~4 660$
-- **Gap important** → Variance élevée
+- RMSE Train : 2 391.10$
+- RMSE Test : 4 660.42$
+- Gap : 2 269.32$ → Variance élevée
 
 **KNN** :
-- RMSE Train : ~2 026$
-- RMSE Test : ~5 407$
-- **Gap très important** → Surapprentissage sévère
+- RMSE Train : 2 026.00$
+- RMSE Test : 5 406.69$
+- Gap : 3 380.69$ → Surapprentissage sévère
 
 **Arbre de Décision** :
-- RMSE Train : ~1 920$
-- RMSE Test : ~2 856$
-- Gap modéré → Léger surapprentissage
+- RMSE Train : 1 920.15$
+- RMSE Test : 2 855.92$
+- Gap : 935.77$ → Léger surapprentissage
 
 **Random Forest** :
-- RMSE Train : ~1 532$
-- RMSE Test : ~2 195$
-- **Gap minimal** → Excellent équilibre ✅
+- RMSE Train : 1 531.83$
+- RMSE Test : 2 195.18$
+- Gap : 663.35$ → **Excellent équilibre** ✅
 
 **Gradient Boosting** :
-- RMSE Train : ~341$
-- RMSE Test : ~2 383$
-- **Gap énorme** → Surapprentissage massif ⚠️
+- RMSE Train : 341.49$
+- RMSE Test : 2 383.14$
+- Gap : 2 041.65$ → Surapprentissage massif ⚠️
 
 **Enseignement** : Random Forest offre le meilleur compromis généralisation/performance.
 
@@ -557,11 +559,11 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Ligne rouge pointillée** : Objectif de 15% d'erreur
 
 **Classement** :
-1. **Gradient Boosting** : ~9.4% ✅ Objectif largement dépassé
-2. **Random Forest** : ~9.6% ✅ Objectif dépassé
-3. **Arbre de Décision** : ~11.5% ✅ Objectif atteint
-4. **Régression Linéaire** : ~20.2% ❌ Objectif non atteint
-5. **KNN** : ~20.2% ❌ Objectif non atteint
+1. **Gradient Boosting** : 9.39% ✅ Objectif largement dépassé
+2. **Random Forest** : 9.65% ✅ Objectif dépassé
+3. **Arbre de Décision** : 11.49% ✅ Objectif atteint
+4. **Régression Linéaire** : 20.17% ❌ Objectif non atteint
+5. **KNN** : 20.20% ❌ Objectif non atteint
 
 **Conclusion** : 3 modèles sur 5 atteignent l'objectif de moins de 15% d'erreur.
 
@@ -635,10 +637,10 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Variables catégorielles moins discriminantes avec encodage label
 
 #### Performance des modèles
-- **Meilleur modèle global** : Random Forest (RMSE test = 2 195$, R² = 0.96, erreur = 9.6%)
-- **Alternative** : Gradient Boosting (légèrement surapprentissage mais excellent sur test)
-- **Modèle le plus interprétable** : Arbre de Décision (performance acceptable : 11.5% erreur)
-- **Modèles inadaptés** : Régression Linéaire et KNN (>20% erreur)
+- **Meilleur modèle global** : Random Forest (RMSE test = 2 195.18$, R² = 0.9606, erreur = 9.65%)
+- **Alternative** : Gradient Boosting (RMSE = 2 383.14$, R² = 0.9536, erreur = 9.39% mais surapprentissage)
+- **Modèle le plus interprétable** : Arbre de Décision (RMSE = 2 855.92$, erreur = 11.49%)
+- **Modèles inadaptés** : Régression Linéaire (20.17% erreur) et KNN (20.20% erreur)
 
 #### Validation
 - Courbes d'apprentissage saines pour Random Forest
@@ -653,10 +655,10 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 ### Modèle Recommandé : Random Forest
 
 **Justification** :
-1. **Meilleur RMSE test** (2 195$) et **meilleur R²** (0.96)
-2. **Erreur de 9.6%** : largement sous l'objectif de 15%
-3. **Équilibre train/test optimal** : pas de surapprentissage
-4. **Robustesse** : performance stable en validation croisée
+1. **Meilleur RMSE test** (2 195.18$) et **meilleur R²** (0.9606)
+2. **Erreur de 9.65%** : largement sous l'objectif de 15%
+3. **Équilibre train/test optimal** : gap de seulement 663.35$ (pas de surapprentissage)
+4. **Robustesse** : validation croisée 5-fold donne RMSE moyen de 2 351.04$ (±605.07)
 5. **Interprétabilité acceptable** : importance des variables accessible
 
 **Limites** :
@@ -674,10 +676,10 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ### Messages Clés
 
-- Le poids et la taille du moteur expliquent 75% de l'importance dans Random Forest
+- Le poids et la taille du moteur expliquent 74.9% de l'importance dans Random Forest
 - Les modèles ensemblistes surpassent largement les modèles simples
-- L'objectif de <15% d'erreur est dépassé avec 9.6% d'erreur moyenne
-- 4 segments de marché distincts ont été identifiés
+- L'objectif de <15% d'erreur est dépassé avec 9.65% d'erreur moyenne (Random Forest)
+- 4 segments de marché distincts ont été identifiés par clustering
 - Le modèle Random Forest offre le meilleur compromis performance/robustesse/interprétabilité
 
 ---
@@ -691,9 +693,9 @@ Les visualisations produites dans ce projet démontrent une démarche méthodiqu
 3. **Évaluer** objectivement 5 modèles de régression différents
 4. **Valider** la généralisation du meilleur modèle (Random Forest)
 5. **Segmenter** le marché en 4 clusters exploitables
-6. **Atteindre** l'objectif fixé : erreur < 15% (résultat : 9.6%)
+6. **Atteindre** l'objectif fixé : erreur < 15% (résultat : 9.65%)
 
-Le modèle Random Forest retenu prédit le prix des voitures d'occasion avec une précision de 90.4% et un R² de 0.96, dépassant largement les attentes initiales du projet.
+Le modèle Random Forest retenu prédit le prix des voitures d'occasion avec un R² de 0.9606 (96.06% de variance expliquée) et une erreur moyenne de 9.65%, dépassant largement les attentes initiales du projet (objectif : <15%).
 
 ---
 
