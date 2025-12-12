@@ -111,8 +111,8 @@ Nous avons exclu `normalized_losses` (trop de valeurs manquantes, 20%).
 | 1. Business Understanding | Définition de la problématique : prédire le prix des voitures d'occasion avec erreur < 15% |
 | 2. Data Understanding | Exploration : statistiques descriptives, visualisations, corrélations sur 201 véhicules |
 | 3. Data Preparation | Nettoyage : gestion des valeurs manquantes, encodage label, standardisation |
-| 4. Modeling | Entraînement de 2 modèles simples : Régression Linéaire et KNN |
-| 5. Evaluation | Validation croisée 5-fold, métriques (RMSE, MAE, R²) |
+| 4. Modeling | Test de 5 modèles (2 simples en Partie II, 3 avancés en Partie III) |
+| 5. Evaluation | Validation croisée 5-fold, métriques (RMSE, MAE, R²), comparaison finale |
 | 6. Deployment | Documentation et rapport final |
 
 ### Question 4.3 : Pourquoi CRISP-DM plutôt que KDD ou SEMMA ?
@@ -173,31 +173,27 @@ Pour un projet d'initiation, CRISP-DM offre le meilleur équilibre entre rigueur
 
 ---
 
-## Module 3 : Premier Modèle Prédictif
+## Module 3 : Votre Premier Modèle Prédictif
 
-### Question 7.1 : Quels modèles avons-nous testés ?
-**Réponse** : Nous avons testé **5 algorithmes de régression** pour atteindre l'objectif des 15% d'erreur :
+### Question 7.1 : Quels modèles simples avons-nous testés en premier ?
+**Réponse** : Nous avons commencé par tester **2 algorithmes de régression simples** :
 1. **Régression Linéaire** : modèle de base, simple et interprétable
 2. **KNN** (K-Nearest Neighbors) : modèle basé sur la similarité
-3. **Arbre de Décision** : modèle non-linéaire très interprétable
-4. **Random Forest** : ensemble de 100 arbres de décision
-5. **Gradient Boosting** : ensemble séquentiel optimisant les erreurs
 
-### Question 7.2 : Comment avons-nous choisi les hyperparamètres pour KNN ?
-**Réponse** : Test de plusieurs valeurs de k (3, 5, 7, 9, 11, 15, 21) avec validation croisée 5-fold.
-- **k optimal** : k=3 (RMSE = 3 612.82$ en validation croisée)
-- Principe : k petit = surapprentissage, k grand = sous-apprentissage
+Ces modèles permettent de comprendre les fondamentaux du machine learning avant de passer aux algorithmes plus avancés.
 
-### Question 7.3 : Quels sont les résultats de chaque modèle ?
+### Question 7.2 : Quels sont les résultats des modèles simples ?
 **Réponse** :
 
 | Modèle | RMSE Test | R² Test | Erreur % | Objectif atteint ? |
 |---|---|---|---|---|
-| Gradient Boosting | 2 383$ | 0.9536 | 9.39% | ✅ Oui |
-| Random Forest | 2 195$ | 0.9606 | 9.65% | ✅ Oui |
-| Arbre de Décision | 2 856$ | 0.9333 | 11.49% | ✅ Oui |
 | Régression Linéaire | 4 660$ | 0.8225 | 20.17% | ❌ Non |
 | KNN (k=3) | 5 407$ | 0.7611 | 20.20% | ❌ Non |
+
+### Question 7.3 : Comment avons-nous choisi les hyperparamètres pour KNN ?
+**Réponse** : Test de plusieurs valeurs de k (3, 5, 7, 9, 11, 15, 21) avec validation croisée 5-fold.
+- **k optimal** : k=3 (RMSE = 3 612.82$ en validation croisée)
+- Principe : k petit = surapprentissage, k grand = sous-apprentissage
 
 ### Question 7.4 : Pourquoi les modèles simples n'atteignent-ils pas l'objectif de 15% ?
 **Réponse** : Les modèles simples ont des limites intrinsèques :
@@ -206,48 +202,10 @@ Pour un projet d'initiation, CRISP-DM offre le meilleur équilibre entre rigueur
 - Le dataset est relativement petit (201 véhicules)
 - Ces modèles ne capturent pas les interactions complexes entre variables
 
-### Question 7.4b : Pourquoi les modèles ensemblistes atteignent-ils l'objectif ?
-**Réponse** : Les modèles à base d'arbres ont plusieurs avantages :
-- **Arbre de Décision** : capture les relations non-linéaires avec des règles simples
-- **Random Forest** : combine 100 arbres pour réduire la variance et améliorer la généralisation
-- **Gradient Boosting** : construit séquentiellement des arbres qui corrigent les erreurs des précédents
-- Ces modèles gèrent naturellement les interactions entre variables et la multicolinéarité
+### Question 7.5 : Quelle est la conclusion de ce premier test ?
+**Réponse** : ❌ **Les 2 modèles simples n'atteignent pas l'objectif de 15% d'erreur**
 
-### Question 7.4c : Quel est le meilleur modèle et pourquoi ?
-**Réponse** : **Random Forest** est le meilleur modèle pour ce projet :
-- **Performance** : 9.65% d'erreur (largement < 15%), R² = 0.9606
-- **Robustesse** : Gap train/test de seulement 663$ (pas de surapprentissage)
-- **Stabilité** : Validation croisée confirme la performance
-- **Interprétabilité** : Importance des variables accessible
-
-Gradient Boosting a une meilleure erreur (9.39%) mais montre un surapprentissage massif (gap train/test de 2 041$)
-
-### Question 7.5 : Y a-t-il du surapprentissage (overfitting) ?
-**Réponse** : Analyse du gap train/test pour chaque modèle :
-
-**Random Forest** : Gap de 663$ ✅ (Excellent équilibre)
-- Meilleur compromis généralisation/performance
-
-**Arbre de Décision** : Gap de 936$ ✅ (Léger surapprentissage acceptable)
-- La profondeur max=5 limite efficacement le surapprentissage
-
-**Régression Linéaire** : Gap de 2 269$ ⚠️ (Variance élevée)
-- Difficulté à généraliser sur ce problème non-linéaire
-
-**Gradient Boosting** : Gap de 2 041$ ⚠️ (Surapprentissage massif)
-- Performance train exceptionnelle mais généralisation limitée
-
-**KNN** : Gap de 3 380$ ❌ (Surapprentissage sévère)
-- Mémorise les données d'entraînement, pire généralisation
-
-### Question 7.6 : Quelles sont les variables les plus importantes ?
-**Réponse** : D'après l'importance des variables du Random Forest :
-1. **curb_weight** (poids du véhicule) : 43.2%
-2. **engine_size** (taille du moteur) : 31.7%
-3. **horsepower** (puissance) : 6.5%
-4. **highway_mpg** (consommation autoroute) : 6.4%
-
-Le poids et la taille du moteur représentent **74.9% de l'importance combinée**. Ces résultats confirment l'analyse de corrélation initiale.
+Avec des erreurs autour de 20%, les modèles simples ne suffisent pas pour ce problème. Il est donc nécessaire de tester des algorithmes plus sophistiqués (Partie III - Module 8).
 
 ---
 
@@ -319,6 +277,91 @@ Pour un projet d'initiation, K-means est plus accessible. Le dendrogramme sert d
 
 ---
 
+# PARTIE III - MACHINE LEARNING SUPERVISÉ AVANCÉ
+
+## Module 8 : Méthodes de Classification Avancées
+
+### Question 11.1 : Pourquoi tester des modèles avancés ?
+**Réponse** : Suite aux résultats insuffisants des modèles simples (20% d'erreur), il est nécessaire d'explorer des algorithmes plus sophistiqués pour atteindre l'objectif de 15% d'erreur.
+
+Les modèles à base d'arbres et les méthodes ensemblistes sont particulièrement adaptés pour :
+- Capturer les relations non-linéaires
+- Gérer les interactions entre variables
+- Traiter la multicolinéarité sans problème
+
+### Question 11.2 : Quels modèles avancés avons-nous testés ?
+**Réponse** : Nous avons testé **3 algorithmes avancés** basés sur les arbres de décision :
+1. **Arbre de Décision** : modèle non-linéaire très interprétable
+2. **Random Forest** : ensemble de 100 arbres de décision
+3. **Gradient Boosting** : ensemble séquentiel optimisant les erreurs
+
+### Question 11.3 : Quels sont les résultats des modèles avancés ?
+**Réponse** :
+
+| Modèle | RMSE Test | R² Test | Erreur % | Objectif atteint ? |
+|---|---|---|---|---|
+| Gradient Boosting | 2 383$ | 0.9536 | 9.39% | ✅ Oui |
+| Random Forest | 2 195$ | 0.9606 | 9.65% | ✅ Oui |
+| Arbre de Décision | 2 856$ | 0.9333 | 11.49% | ✅ Oui |
+
+**Constat** : **Les 3 modèles avancés atteignent l'objectif de 15%** ✅
+
+### Question 11.4 : Pourquoi les modèles ensemblistes atteignent-ils l'objectif ?
+**Réponse** : Les modèles à base d'arbres ont plusieurs avantages :
+- **Arbre de Décision** : capture les relations non-linéaires avec des règles simples
+- **Random Forest** : combine 100 arbres pour réduire la variance et améliorer la généralisation
+- **Gradient Boosting** : construit séquentiellement des arbres qui corrigent les erreurs des précédents
+- Ces modèles gèrent naturellement les interactions entre variables et la multicolinéarité
+
+### Question 11.5 : Quel est le meilleur modèle et pourquoi ?
+**Réponse** : **Random Forest** est le meilleur modèle pour ce projet :
+- **Performance** : 9.65% d'erreur (largement < 15%), R² = 0.9606
+- **Robustesse** : Gap train/test de seulement 663$ (pas de surapprentissage)
+- **Stabilité** : Validation croisée confirme la performance
+- **Interprétabilité** : Importance des variables accessible
+
+Gradient Boosting a une meilleure erreur (9.39%) mais montre un surapprentissage massif (gap train/test de 2 041$).
+
+### Question 11.6 : Y a-t-il du surapprentissage avec les modèles avancés ?
+**Réponse** : Analyse du gap train/test pour chaque modèle avancé :
+
+**Random Forest** : Gap de 663$ ✅ (Excellent équilibre)
+- Meilleur compromis généralisation/performance
+
+**Arbre de Décision** : Gap de 936$ ✅ (Léger surapprentissage acceptable)
+- La profondeur max=5 limite efficacement le surapprentissage
+
+**Gradient Boosting** : Gap de 2 041$ ⚠️ (Surapprentissage important)
+- Performance train exceptionnelle mais généralisation limitée
+- Nécessiterait une régularisation plus forte (learning_rate plus faible)
+
+### Question 11.7 : Quelles sont les variables les plus importantes ?
+**Réponse** : D'après l'importance des variables du Random Forest :
+1. **curb_weight** (poids du véhicule) : 43.2%
+2. **engine_size** (taille du moteur) : 31.7%
+3. **horsepower** (puissance) : 6.5%
+4. **highway_mpg** (consommation autoroute) : 6.4%
+
+Le poids et la taille du moteur représentent **74.9% de l'importance combinée**. Ces résultats confirment l'analyse de corrélation initiale.
+
+### Question 11.8 : Quelle est la comparaison finale de tous les modèles ?
+**Réponse** : Comparaison des 5 modèles testés (2 simples + 3 avancés) :
+
+| Modèle | RMSE Test | R² Test | Erreur % | Objectif |
+|---|---|---|---|---|
+| **Gradient Boosting** | 2 383$ | 0.9536 | **9.39%** | ✅ |
+| **Random Forest** | **2 195$** | **0.9606** | 9.65% | ✅ |
+| **Arbre de Décision** | 2 856$ | 0.9333 | 11.49% | ✅ |
+| Régression Linéaire | 4 660$ | 0.8225 | 20.17% | ❌ |
+| KNN (k=3) | 5 407$ | 0.7611 | 20.20% | ❌ |
+
+**Conclusion** :
+- **3 modèles sur 5** atteignent l'objectif de 15% d'erreur
+- Les modèles ensemblistes surpassent largement les modèles simples
+- Random Forest offre le meilleur équilibre performance/robustesse
+
+---
+
 ## Limites et Perspectives
 
 ### Question 10.1 : Quelles sont les limites du projet ?
@@ -374,6 +417,9 @@ Pour un projet d'initiation, K-means est plus accessible. Le dendrogramme sert d
 
 **Apprentissages réalistes** :
 - 201 véhicules est un dataset petit mais suffisant pour obtenir de bons résultats
+- **Progression pédagogique naturelle** :
+  - Module 3 (modèles simples) → 20% d'erreur → objectif non atteint
+  - Module 8 (modèles avancés) → 9-11% d'erreur → objectif dépassé
 - Les modèles simples (Régression Linéaire, KNN) ne suffisent pas pour des objectifs ambitieux
 - Les algorithmes plus sophistiqués permettent d'atteindre et dépasser les objectifs
 - **Le poids et la taille du moteur expliquent 75% du prix - ces deux variables sont cruciales**
@@ -400,7 +446,13 @@ Ce projet nous a permis de découvrir concrètement la Data Science et le Machin
 - Les variables poids (43.2%) et taille moteur (31.7%) dominent l'importance
 - 4 segments de marché clairement identifiés (économique, familial, sportif/premium, luxe)
 
-**Enseignement principal** : En explorant différents types de modèles (simples et ensemblistes), nous avons non seulement atteint mais **dépassé largement l'objectif initial**. Ce projet démontre qu'avec une méthodologie rigoureuse et le choix des bons algorithmes, même un petit dataset de 201 véhicules permet d'obtenir d'excellentes performances prédictives.
+**Enseignement principal** :
+
+Ce projet illustre une **progression pédagogique naturelle en Data Science** :
+1. **Partie II - Module 3** : Les modèles simples (Régression Linéaire, KNN) atteignent ~20% d'erreur → objectif non atteint
+2. **Partie III - Module 8** : Les modèles avancés (Arbres, Random Forest, Gradient Boosting) atteignent 9-11% d'erreur → objectif largement dépassé
+
+Cette progression démontre qu'avec une méthodologie rigoureuse (CRISP-DM) et le choix des bons algorithmes, même un petit dataset de 201 véhicules permet d'obtenir d'excellentes performances prédictives. L'importance de ne pas se limiter aux approches simples et de tester progressivement des modèles plus sophistiqués est clairement démontrée.
 
 ---
 
