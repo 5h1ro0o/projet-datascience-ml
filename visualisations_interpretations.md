@@ -10,7 +10,7 @@
 
 Ce document présente l'analyse détaillée des visualisations générées dans le cadre du projet de prédiction du prix de voitures d'occasion. L'objectif est de construire un modèle de régression capable de prédire le prix avec une erreur inférieure à 15% du prix réel.
 
-**Structure du document** : Ce projet suit la méthodologie de l'énoncé avec la Partie I (exploration et préparation) et la Partie II (modélisation avec 2 modèles simples adaptés à une initiation).
+**Structure du document** : Ce projet suit la méthodologie de l'énoncé avec la Partie I (exploration et préparation) et la Partie II (modélisation complète testant 5 modèles pour atteindre l'objectif des 15% d'erreur).
 
 Toutes les interprétations ci-dessous sont basées exclusivement sur les visualisations produites par notre analyse.
 
@@ -329,6 +329,108 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ---
 
+### C) Arbre de Décision
+
+**Fichier source** : `arbre_decision.png`
+
+**Observation** : Représentation de l'arbre de décision avec profondeur maximale de 5.
+
+**Analyse de la structure** :
+
+**Nœud racine** :
+- Première division sur curb_weight <= 2650.0
+- Confirmation : le poids est la variable la plus discriminante
+
+**Branche gauche (véhicules légers)** :
+- Subdivisions sur curb_weight, body_style, stroke
+- Les feuilles prédisent des prix dans la gamme 6 000$ - 12 000$
+- Segment économique et compact
+
+**Branche droite (véhicules lourds)** :
+- Subdivisions sur engine_size, width, make_encoded
+- Les feuilles prédisent des prix 10 000$ - 28 000$
+- Segment moyen à premium
+
+**Règles extraites (exemples)** :
+- Si curb_weight <= 2221.5 ET body_style <= 2.5 → Prix = 6 485$
+- Si curb_weight > 2650.0 ET engine_size > 188.5 → Prix = 27 656$
+
+**Résultats du modèle** :
+- RMSE Test : 2 855.92$
+- R² Test : 0.9333 (93.33% de variance expliquée)
+- Erreur moyenne : 11.49%
+
+**Avantages** :
+- Très interprétable : chaque décision est explicite
+- Idéal pour expliquer les prédictions à un non-technicien
+- Profondeur 5 limite le surapprentissage
+- **Atteint l'objectif de 15% d'erreur !**
+
+---
+
+### D) Random Forest
+
+**Fichier source** : `random_forest_importance.png`
+
+**Observation** : Diagramme en barres des 15 features les plus importantes.
+
+**Top 10 des variables (valeurs exactes)** :
+1. curb_weight : 0.432 (43.2%) - Variable dominante
+2. engine_size : 0.317 (31.7%) - Deuxième facteur majeur
+3. horsepower : 0.065 (6.5%)
+4. highway_mpg : 0.064 (6.4%)
+5. city_mpg : 0.038 (3.8%)
+6. width : 0.028 (2.8%)
+7. make_encoded : 0.020 (2.0%)
+8. wheel_base : 0.010 (1.0%)
+9. peak_rpm : 0.007 (0.7%)
+10. length : 0.005 (0.5%)
+
+**Variables restantes** : < 0.5% chacune
+
+**Analyse** :
+- Domination écrasante du poids et de la taille du moteur (74.9% d'importance combinée)
+- Les caractéristiques physiques primordiales
+- Les variables catégorielles (marque, style) ont un impact limité avec l'encodage label
+- L'encodage one-hot aurait probablement donné plus d'importance à la marque
+
+**Comparaison avec la corrélation** :
+- Cohérence totale : les variables corrélées au prix sont bien les plus importantes
+- Random Forest confirme l'analyse exploratoire initiale
+
+**Résultats du modèle** :
+- RMSE Test : 2 195.18$
+- R² Test : 0.9606 (96.06% de variance expliquée)
+- Erreur moyenne : 9.65%
+
+**Performance** :
+- **Meilleur modèle global : objectif largement dépassé (9.65% < 15%)**
+- Équilibre train/test optimal : gap de seulement 663.35$ (pas de surapprentissage)
+- Robustesse confirmée par validation croisée 5-fold
+- Prédictions lisses grâce à l'agrégation de 100 arbres
+
+---
+
+### E) Gradient Boosting
+
+**Résultats du modèle** :
+- RMSE Test : 2 383.14$
+- R² Test : 0.9536 (95.36% de variance expliquée)
+- Erreur moyenne : 9.39%
+
+**Observation** :
+- **Meilleure erreur de tous les modèles : 9.39%**
+- RMSE légèrement supérieur à Random Forest
+- Surapprentissage plus marqué : gap train/test de 2 041.65$
+- Prédictions très précises sur le set de test
+
+**Comparaison Random Forest vs Gradient Boosting** :
+- Gradient Boosting : meilleure erreur % (9.39%) mais surapprentissage plus élevé
+- Random Forest : meilleur équilibre généralisation/performance (9.65%)
+- Les deux modèles dépassent largement l'objectif de 15%
+
+---
+
 ## Module 5 : Validation et Diagnostics
 
 ### Validation Croisée 5-fold
@@ -346,20 +448,30 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Fichier source** : `courbes_apprentissage.png`
 
-**Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset (pour la Régression Linéaire).
+**Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset (pour Random Forest).
 
-**Observations** :
-- **Début de courbe** (peu d'exemples) : Grand écart entre train et validation → surapprentissage
-- **Milieu de courbe** : Les courbes se rapprochent progressivement
-- **Fin de courbe** : Les courbes convergent vers une performance stable
+**Début de courbe (16 exemples, 10%)** :
+- RMSE train très faible (environ 5 700$)
+- RMSE validation très élevé (environ 6 800$)
+- Gap énorme : surapprentissage massif avec peu de données
 
-**Diagnostic pour niveau initiation** :
-- Pas de sous-apprentissage : la performance s'améliore avec plus de données
-- Surapprentissage initial se réduit avec plus d'exemples
-- Le modèle généralise correctement sur le dataset complet
-- Plus de données n'améliorerait que marginalement les performances
+**Milieu de courbe (48-80 exemples, 30-50%)** :
+- RMSE train augmente progressivement (vers 1 900$)
+- RMSE validation diminue fortement (vers 3 600$ puis 3 200$)
+- Le gap se réduit significativement
 
-**Conclusion** : Le modèle est correctement calibré pour ce dataset de 201 véhicules.
+**Fin de courbe (128-160 exemples, 80-100%)** :
+- RMSE train stable (environ 1 550-1 600$)
+- RMSE validation converge (environ 2 600$)
+- Gap réduit : les courbes se rapprochent
+
+**Diagnostic** :
+- Pas de sous-apprentissage : les scores ne sont pas au plancher
+- Surapprentissage limité : gap final acceptable entre train et validation
+- Le modèle généralise bien avec le dataset complet
+- Plateau atteint : plus de données n'améliorerait que marginalement les performances
+
+**Conclusion** : Le Random Forest avec 100 arbres et max_depth=10 est bien calibré pour ce dataset de 201 véhicules.
 
 ---
 
@@ -494,7 +606,92 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ---
 
-## Synthèse et Apprentissages (Niveau Initiation)
+## Comparaison Finale des 5 Modèles
+
+### Visualisation : Métriques de Performance
+
+**Fichier source** : `comparaison_modeles.png` (4 subplots)
+
+#### RMSE Test par Modèle
+
+**Classement** (du meilleur au moins bon) :
+1. Random Forest : 2 195.18$ (Meilleur RMSE)
+2. Gradient Boosting : 2 383.14$
+3. Arbre de Décision : 2 855.92$
+4. Régression Linéaire : 4 660.42$
+5. KNN : 5 406.69$ (Pire RMSE)
+
+**Interprétation** :
+- Random Forest domine avec une marge confortable
+- Les modèles ensemblistes (RF, GB) surclassent les modèles simples
+- KNN performe mal, probablement à cause de la dimensionnalité
+
+#### R² Test par Modèle
+
+**Classement** :
+1. Random Forest : R² = 0.9606 (Explique 96.06% de la variance)
+2. Gradient Boosting : R² = 0.9536 (95.36%)
+3. Arbre de Décision : R² = 0.9333 (93.33%)
+4. Régression Linéaire : R² = 0.8225 (82.25%)
+5. KNN : R² = 0.7611 (76.11%)
+
+**Interprétation** :
+- Random Forest et Gradient Boosting ont un pouvoir prédictif excellent
+- Même l'Arbre de Décision simple atteint 93% d'explication
+- Les modèles linéaires sont limités par la non-linéarité des relations
+
+#### Erreur % par Modèle
+
+**Ligne rouge pointillée** : Objectif de 15% d'erreur
+
+**Classement** :
+1. Gradient Boosting : 9.39% ✅ (Objectif largement dépassé)
+2. Random Forest : 9.65% ✅ (Objectif dépassé)
+3. Arbre de Décision : 11.49% ✅ (Objectif atteint)
+4. Régression Linéaire : 20.17% ❌ (Objectif non atteint)
+5. KNN : 20.20% ❌ (Objectif non atteint)
+
+**Conclusion** : **3 modèles sur 5 atteignent l'objectif de moins de 15% d'erreur.**
+
+#### Analyse Train vs Test (Surapprentissage)
+
+**Régression Linéaire** :
+- RMSE Train : 2 391.10$ | RMSE Test : 4 660.42$
+- Gap : 2 269.32$ (Variance élevée)
+
+**KNN** :
+- RMSE Train : 2 026.00$ | RMSE Test : 5 406.69$
+- Gap : 3 380.69$ (Surapprentissage sévère)
+
+**Arbre de Décision** :
+- RMSE Train : 1 920.15$ | RMSE Test : 2 855.92$
+- Gap : 935.77$ (Léger surapprentissage)
+
+**Random Forest** :
+- RMSE Train : 1 531.83$ | RMSE Test : 2 195.18$
+- Gap : 663.35$ ✅ (Excellent équilibre)
+
+**Gradient Boosting** :
+- RMSE Train : 341.49$ | RMSE Test : 2 383.14$
+- Gap : 2 041.65$ (Surapprentissage massif)
+
+**Enseignement** : Random Forest offre le meilleur compromis généralisation/performance.
+
+### Visualisation : Prédictions vs Réalité - Tous les Modèles
+
+**Fichier source** : `predictions_tous_modeles.png` (5 subplots)
+
+**Comparaison visuelle globale** :
+- **Random Forest & Gradient Boosting** : Excellent alignement sur toute la gamme de prix, dispersion minimale
+- **Arbre de Décision** : Bon alignement avec effet plateau (prédictions constantes dans les feuilles)
+- **Régression Linéaire** : Alignement correct mais sous-estimation pour prix > 30 000$
+- **KNN** : Dispersion importante avec effet "escalier" (moyennes de voisins)
+
+**Conclusion visuelle** : GB = RF >> Arbre > LR ≈ KNN
+
+---
+
+## Synthèse et Apprentissages
 
 ### Ce que nous avons réalisé
 
@@ -505,12 +702,15 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Conservation justifiée des outliers (segments légitimes du marché)
 - Application de la méthodologie CRISP-DM
 
-**Partie II - Modélisation Basique** :
-- Test de 2 modèles simples adaptés à une initiation :
-  - **Régression Linéaire** : Simple, rapide, interprétable (erreur 20.17%)
-  - **KNN** : Flexible mais nécessite optimisation de k (erreur 20.20%)
+**Partie II - Modélisation Complète** :
+- Test de 5 modèles de régression :
+  - **Régression Linéaire** : Modèle de base (erreur 20.17%)
+  - **KNN** : Modèle basé sur la similarité (erreur 20.20%)
+  - **Arbre de Décision** : Modèle interprétable (erreur 11.49%) ✅
+  - **Random Forest** : Modèle ensemble robuste (erreur 9.65%) ✅
+  - **Gradient Boosting** : Modèle ensemble optimisé (erreur 9.39%) ✅
 - Validation croisée 5-fold pour estimer la stabilité
-- Analyse des courbes d'apprentissage
+- Analyse des courbes d'apprentissage (Random Forest)
 - Segmentation du marché en 4 clusters distincts avec K-means
 
 ### Résultats obtenus
@@ -518,13 +718,17 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 **Performance des modèles testés** :
 | Modèle | RMSE Test | R² Test | Erreur % | Objectif atteint? |
 |--------|-----------|---------|----------|-------------------|
+| Gradient Boosting | 2 383$ | 0.9536 | 9.39% | ✅ Oui |
+| Random Forest | 2 195$ | 0.9606 | 9.65% | ✅ Oui |
+| Arbre de Décision | 2 856$ | 0.9333 | 11.49% | ✅ Oui |
 | Régression Linéaire | 4 660$ | 0.8225 | 20.17% | ❌ Non |
 | KNN (k=3) | 5 407$ | 0.7611 | 20.20% | ❌ Non |
 
-**Constat pour niveau initiation** :
-- Aucun des 2 modèles simples n'atteint l'objectif de 15% d'erreur
-- Les deux modèles ont des performances similaires (environ 20% d'erreur)
-- La Régression Linéaire est légèrement plus stable et plus simple à interpréter
+**Constat** :
+- **3 modèles sur 5 atteignent l'objectif de 15% d'erreur**
+- Les modèles ensemblistes (Random Forest, Gradient Boosting) surpassent largement les modèles simples
+- Random Forest offre le meilleur compromis performance/robustesse (9.65% d'erreur, pas de surapprentissage)
+- Les modèles simples (Régression Linéaire, KNN) ont des limites intrinsèques pour ce problème
 
 **Segmentation marché** :
 - 4 clusters identifiés avec K-means : économique, familial, sportif/premium, luxe
@@ -541,47 +745,71 @@ D'après l'analyse de corrélation :
 
 Ces 4 variables expliquent la majeure partie de la variance du prix.
 
+### Modèle Recommandé : Random Forest
+
+**Justification** :
+1. Meilleur RMSE test (2 195.18$) et meilleur R² (0.9606)
+2. Erreur de 9.65% : largement sous l'objectif de 15%
+3. Équilibre train/test optimal : gap de seulement 663.35$ (pas de surapprentissage)
+4. Robustesse : validation croisée 5-fold confirme la stabilité
+5. Interprétabilité acceptable : importance des variables accessible
+
+**Limites** :
+- Moins interprétable qu'un arbre unique
+- Temps d'entraînement plus long que les modèles simples
+- Complexité accrue nécessitant 100 arbres
+
 ### Limites identifiées
 
 **Limites des modèles simples** :
 - La régression linéaire suppose des relations linéaires (limitation forte)
 - KNN souffre de la dimensionnalité élevée (21 features)
-- Les deux modèles peinent sur les véhicules haut de gamme (>30 000$)
+- Les deux modèles simples n'atteignent pas l'objectif (20% d'erreur)
 
 **Limites du projet** :
 - Dataset petit (201 véhicules) pour le machine learning
 - Données anciennes (1985) - prix non actuels
-- Encodage label simple (pourrait être amélioré avec one-hot encoding)
+- Encodage label simple (One-Hot Encoding améliorerait les performances)
+- Gradient Boosting montre un surapprentissage important
 
 ### Perspectives d'amélioration
 
-**Pour atteindre l'objectif de 15% d'erreur, il faudrait** :
-- Tester des modèles plus complexes (arbres de décision, ensembles de modèles)
-- Faire du feature engineering (créer de nouvelles variables)
-- Optimiser les hyperparamètres avec GridSearch
+**Pour améliorer encore les performances** :
+- Feature engineering : créer de nouvelles variables (ratio puissance/poids, etc.)
+- One-Hot Encoding pour les variables catégorielles
+- GridSearchCV pour optimiser finement les hyperparamètres
+- Tester d'autres modèles ensemblistes (XGBoost, LightGBM)
 - Utiliser un dataset plus grand et plus récent
 
-**Apprentissages pour deux étudiants en initiation** :
+**Apprentissages du projet** :
 - Importance de l'exploration des données avant toute modélisation
-- La méthodologie CRISP-DM structure bien un projet data science
-- Les modèles simples ne suffisent pas toujours - c'est normal !
+- La méthodologie CRISP-DM structure efficacement un projet data science
+- Les modèles simples ne suffisent pas toujours pour des objectifs ambitieux
+- Les modèles ensemblistes (Random Forest, Gradient Boosting) surpassent les modèles simples
 - La validation croisée est essentielle pour estimer la performance réelle
 - Le clustering permet de découvrir des structures cachées dans les données
+- **L'objectif de 15% d'erreur EST atteignable avec les bons algorithmes !**
 
 ---
 
 ## Conclusion
 
-Ce projet d'initiation nous a permis de mettre en pratique l'ensemble du cycle de vie d'un projet de Data Science, de l'exploration des données à la modélisation en passant par le prétraitement rigoureux.
+Ce projet nous a permis de mettre en pratique l'ensemble du cycle de vie d'un projet de Data Science, de l'exploration des données à la modélisation avancée en passant par le prétraitement rigoureux.
 
-**Bilan réaliste** :
+**Bilan final** :
 - ✅ Méthodologie complète appliquée (CRISP-DM)
 - ✅ Exploration et préparation rigoureuses
-- ✅ 2 modèles simples testés et validés
+- ✅ 5 modèles testés et comparés systématiquement
 - ✅ Segmentation marché réussie (4 clusters)
-- ❌ Objectif de 15% d'erreur non atteint avec les modèles basiques
+- ✅ **Objectif de 15% d'erreur DÉPASSÉ : 9.65% avec Random Forest**
 
-**Enseignement principal** : Les modèles simples (Régression Linéaire, KNN) ne permettent pas d'atteindre l'objectif ambitieux de 15% d'erreur sur ce dataset. Pour progresser, il faudrait explorer des algorithmes plus sophistiqués lors de modules avancés.
+**Résultats clés** :
+- **Random Forest** est le modèle recommandé : 9.65% d'erreur, R² = 0.9606, excellent équilibre
+- **3 modèles sur 5** atteignent l'objectif (Arbre de Décision, Random Forest, Gradient Boosting)
+- Les modèles ensemblistes surpassent largement les modèles simples
+- Le poids et la taille du moteur représentent 74.9% de l'importance des variables
+
+**Enseignement principal** : En explorant différents types de modèles (simples et ensemblistes), nous avons non seulement atteint mais **dépassé largement l'objectif initial** (9.65% vs 15%). Ce projet démontre l'importance de tester plusieurs algorithmes et de ne pas se limiter aux approches les plus simples.
 
 ---
 
