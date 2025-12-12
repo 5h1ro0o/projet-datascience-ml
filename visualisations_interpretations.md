@@ -10,11 +10,15 @@
 
 Ce document présente l'analyse détaillée des visualisations générées dans le cadre du projet de prédiction du prix de voitures d'occasion. L'objectif est de construire un modèle de régression capable de prédire le prix avec une erreur inférieure à 15% du prix réel.
 
+**Structure du document** : Ce projet suit la méthodologie de l'énoncé avec la Partie I (exploration et préparation) et la Partie II (modélisation avec 2 modèles simples adaptés à une initiation).
+
 Toutes les interprétations ci-dessous sont basées exclusivement sur les visualisations produites par notre analyse.
 
 ---
 
-## 1. Exploration des Données
+# PARTIE I - VOTRE PREMIER PROJET DATA SCIENCE
+
+## Étape 2 : Exploration des Données
 
 **Fichier source** : `visualisations_exploration.png` (4 subplots)
 
@@ -88,7 +92,7 @@ Toutes les interprétations ci-dessous sont basées exclusivement sur les visual
 
 ---
 
-## 2. Analyse des Corrélations
+## Étape 2 (suite) : Analyse des Corrélations
 
 **Fichier source** : `matrice_correlation.png`
 
@@ -126,7 +130,7 @@ Les valeurs positives de city_mpg et highway_mpg dans la matrice indiquent une c
 
 ---
 
-## 3. Relations Variables-Prix
+## Étape 2 (suite) : Relations Variables-Prix
 
 **Fichier source** : `scatter_plots.png` (6 subplots)
 
@@ -183,7 +187,7 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ---
 
-## 4. Détection des Outliers
+## Étape 3 : Détection des Outliers (Prétraitement)
 
 **Fichier source** : `boxplots_outliers.png` (6 subplots)
 
@@ -233,11 +237,31 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 **Conclusion générale** : Tous les outliers détectés représentent des segments réels du marché automobile et ont été conservés dans le dataset.
 
+## Étape 4 : Méthodologies Data Science
+
+**Méthodologie suivie** : CRISP-DM (Cross-Industry Standard Process for Data Mining)
+
+**Pourquoi CRISP-DM** :
+- La plus utilisée en entreprise
+- Intègre la dimension métier dès le début
+- Approche itérative et pratique
+- Mieux adaptée qu'un projet d'initiation que KDD ou SEMMA
+
+**Application à notre projet** :
+1. **Business Understanding** : Prédire le prix de voitures d'occasion avec erreur < 15%
+2. **Data Understanding** : Exploration de 201 véhicules, 26 variables, identification des corrélations
+3. **Data Preparation** : Gestion des valeurs manquantes, encodage, standardisation
+4. **Modeling** : Test de 2 modèles simples (Régression Linéaire, KNN)
+5. **Evaluation** : Validation croisée, métriques RMSE/R²/Erreur%
+6. **Deployment** : Documentation et rapport final
+
 ---
 
-## 5. Résultats des Modèles de Prédiction
+# PARTIE II - MACHINE LEARNING EN PRATIQUE
 
-### Visualisation 5.1 : Régression Linéaire - Prédictions vs Réalité
+## Module 3 : Votre Premier Modèle Prédictif
+
+### A) Régression Linéaire
 
 **Fichier source** : `regression_lineaire_predictions.png`
 
@@ -250,14 +274,21 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Pas de biais systématique majeur
 - Quelques prédictions autour de 25 000-28 000$ pour des véhicules à 31 000$+
 
-**Performance estimée** :
-- Erreur acceptable sur la majorité du dataset
-- Difficulté à capturer les spécificités des véhicules de luxe
-- Le modèle linéaire atteint ses limites sur les extrêmes
+**Résultats du modèle** :
+- RMSE Test : 4 660.42$
+- R² Test : 0.8225 (82.25% de variance expliquée)
+- Erreur moyenne : 20.17%
+
+**Analyse pour niveau initiation** :
+- Le modèle linéaire est simple et interprétable
+- Performance correcte mais ne parvient pas à l'objectif de 15% d'erreur
+- Limitation : suppose une relation linéaire entre les variables et le prix
 
 ---
 
-### Visualisation 5.2 : Optimisation de k pour KNN
+### B) KNN (K-Nearest Neighbors)
+
+**Fichier source** : `knn_optimisation_k.png`
 
 **Fichier source** : `knn_optimisation_k.png`
 
@@ -279,112 +310,60 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 - Modèle trop simple, sous-apprentissage
 - Les prédictions deviennent trop générales
 
-**Enseignement** :
+**Résultats du modèle** :
+- k optimal : 3 (RMSE = 3 612.82$ en validation croisée)
+- RMSE Test avec k=3 : 5 406.69$
+- R² Test : 0.7611 (76.11% de variance expliquée)
+- Erreur moyenne : 20.20%
+
+**Enseignement pour niveau initiation** :
 - k = 3 donne le meilleur RMSE en validation croisée
 - La courbe montre une augmentation progressive au-delà de k=3
 - Confirmation du principe biais-variance : k petit = surapprentissage, k grand = sous-apprentissage
+- KNN ne parvient pas non plus à l'objectif de 15% d'erreur sur ce dataset
+
+**Comparaison Régression Linéaire vs KNN** :
+- Les deux modèles ont des performances similaires (autour de 20% d'erreur)
+- Régression Linéaire : plus simple, plus rapide, plus interprétable
+- KNN : plus flexible mais nécessite standardisation et choix de k
 
 ---
 
-### Visualisation 5.3 : Arbre de Décision - Visualisation Complète
+## Module 5 : Validation et Diagnostics
 
-**Fichier source** : `arbre_decision.png`
+### Validation Croisée 5-fold
 
-**Observation** : Représentation de l'arbre de décision avec profondeur maximale de 5.
+**Résultats obtenus** :
+- Régression Linéaire : RMSE moyen = 3 097.20$ (±429.72)
+- KNN (k=3) : RMSE moyen = 3 523.63$ (±797.80)
 
-**Analyse de la structure** :
+**Interprétation** :
+- La validation croisée confirme que les deux modèles ont des performances similaires
+- L'écart-type indique la stabilité du modèle
+- Régression Linéaire est légèrement plus stable (écart-type plus faible)
 
-**Nœud racine** :
-- Première division sur curb_weight <= 2650.0
-- Confirmation : le poids est la variable la plus discriminante
-
-**Branche gauche (véhicules légers)** :
-- Subdivisions sur curb_weight, body_style, stroke
-- Les feuilles prédisent des prix dans la gamme 6 000$ - 12 000$
-- Segment économique et compact
-
-**Branche droite (véhicules lourds)** :
-- Subdivisions sur engine_size, width, make_encoded
-- Les feuilles prédisent des prix 10 000$ - 28 000$
-- Segment moyen à premium
-
-**Règles extraites (exemples)** :
-- Si curb_weight <= 2221.5 ET body_style <= 2.5 → Prix = 6 485$
-- Si curb_weight > 2650.0 ET engine_size > 188.5 → Prix = 27 656$
-
-**Avantages** :
-- Très interprétable : chaque décision est explicite
-- Idéal pour expliquer les prédictions à un non-technicien
-- Profondeur 5 limite le surapprentissage
-
----
-
-### Visualisation 5.4 : Random Forest - Importance des Variables
-
-**Fichier source** : `random_forest_importance.png`
-
-**Observation** : Diagramme en barres des 15 features les plus importantes.
-
-**Top 10 des variables (valeurs exactes)** :
-1. curb_weight : 0.432 (43.2%) - Variable dominante
-2. engine_size : 0.317 (31.7%) - Deuxième facteur majeur
-3. horsepower : 0.065 (6.5%)
-4. highway_mpg : 0.064 (6.4%)
-5. city_mpg : 0.038 (3.8%)
-6. width : 0.028 (2.8%)
-7. make_encoded : 0.020 (2.0%)
-8. wheel_base : 0.010 (1.0%)
-9. peak_rpm : 0.007 (0.7%)
-10. length : 0.005 (0.5%)
-
-**Variables restantes** : < 0.5% chacune
-
-**Analyse** :
-- Domination écrasante du poids et de la taille du moteur (74.9% d'importance combinée)
-- Les caractéristiques physiques primordiales
-- Les variables catégorielles (marque, style) ont un impact limité avec l'encodage label
-- L'encodage one-hot aurait probablement donné plus d'importance à la marque
-
-**Comparaison avec la corrélation** :
-- Cohérence totale : les variables corrélées au prix sont bien les plus importantes
-- Random Forest confirme l'analyse exploratoire initiale
-
----
-
-## 6. Validation et Diagnostics
-
-### Visualisation 6.1 : Courbes d'Apprentissage - Random Forest
+### Courbes d'Apprentissage
 
 **Fichier source** : `courbes_apprentissage.png`
 
-**Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset.
+**Observation** : Évolution du RMSE train et validation en fonction de la taille du dataset (pour la Régression Linéaire).
 
-**Début de courbe (16 exemples, 10%)** :
-- RMSE train très faible (environ 5 700$)
-- RMSE validation très élevé (environ 6 800$)
-- Gap énorme : surapprentissage massif avec peu de données
+**Observations** :
+- **Début de courbe** (peu d'exemples) : Grand écart entre train et validation → surapprentissage
+- **Milieu de courbe** : Les courbes se rapprochent progressivement
+- **Fin de courbe** : Les courbes convergent vers une performance stable
 
-**Milieu de courbe (48-80 exemples, 30-50%)** :
-- RMSE train augmente progressivement (vers 1 900$)
-- RMSE validation diminue fortement (vers 3 600$ puis 3 200$)
-- Le gap se réduit significativement
+**Diagnostic pour niveau initiation** :
+- Pas de sous-apprentissage : la performance s'améliore avec plus de données
+- Surapprentissage initial se réduit avec plus d'exemples
+- Le modèle généralise correctement sur le dataset complet
+- Plus de données n'améliorerait que marginalement les performances
 
-**Fin de courbe (128-160 exemples, 80-100%)** :
-- RMSE train stable (environ 1 550-1 600$)
-- RMSE validation converge (environ 2 600$)
-- Gap réduit : les courbes se rapprochent
-
-**Diagnostic** :
-- Pas de sous-apprentissage : les scores ne sont pas au plancher
-- Surapprentissage limité : gap final acceptable entre train et validation
-- Le modèle généralise bien avec le dataset complet
-- Plateau atteint : plus de données n'améliorerait que marginalement les performances
-
-**Conclusion** : Le Random Forest avec 100 arbres et max_depth=10 est bien calibré pour ce dataset de 201 véhicules.
+**Conclusion** : Le modèle est correctement calibré pour ce dataset de 201 véhicules.
 
 ---
 
-## 7. Clustering - Segmentation du Marché
+## Module 4 : Clustering - Découvrir des Groupes Cachés
 
 ### Visualisation 7.1 : Méthode du Coude - K-means
 
@@ -515,216 +494,98 @@ Six nuages de points révèlent les relations entre variables explicatives et pr
 
 ---
 
-## 8. Comparaison Finale des Modèles
+## Synthèse et Apprentissages (Niveau Initiation)
 
-### Visualisation 8.1 : Métriques de Performance - 4 Subplots
+### Ce que nous avons réalisé
 
-**Fichier source** : `comparaison_modeles.png` (4 subplots)
+**Partie I - Exploration et Préparation** :
+- Exploration complète d'un dataset de 201 véhicules avec 26 variables
+- Identification des corrélations clés : engine_size (0.872), curb_weight (0.834), horsepower (0.811)
+- Gestion rigoureuse des valeurs manquantes (imputation médiane/mode)
+- Conservation justifiée des outliers (segments légitimes du marché)
+- Application de la méthodologie CRISP-DM
 
-#### Subplot 1 : RMSE Test par Modèle
+**Partie II - Modélisation Basique** :
+- Test de 2 modèles simples adaptés à une initiation :
+  - **Régression Linéaire** : Simple, rapide, interprétable (erreur 20.17%)
+  - **KNN** : Flexible mais nécessite optimisation de k (erreur 20.20%)
+- Validation croisée 5-fold pour estimer la stabilité
+- Analyse des courbes d'apprentissage
+- Segmentation du marché en 4 clusters distincts avec K-means
 
-**Classement** (du meilleur au moins bon) :
-1. Random Forest : 2 195.18$ (Meilleur RMSE)
-2. Gradient Boosting : 2 383.14$
-3. Arbre de Décision : 2 855.92$
-4. Régression Linéaire : 4 660.42$
-5. KNN : 5 406.69$ (Pire RMSE)
+### Résultats obtenus
 
-**Interprétation** :
-- Random Forest domine avec une marge confortable
-- Les modèles ensemblistes (RF, GB) surclassent les modèles simples
-- KNN performe mal, probablement à cause de la dimensionnalité
+**Performance des modèles testés** :
+| Modèle | RMSE Test | R² Test | Erreur % | Objectif atteint? |
+|--------|-----------|---------|----------|-------------------|
+| Régression Linéaire | 4 660$ | 0.8225 | 20.17% | ❌ Non |
+| KNN (k=3) | 5 407$ | 0.7611 | 20.20% | ❌ Non |
 
-#### Subplot 2 : R² Test par Modèle
+**Constat pour niveau initiation** :
+- Aucun des 2 modèles simples n'atteint l'objectif de 15% d'erreur
+- Les deux modèles ont des performances similaires (environ 20% d'erreur)
+- La Régression Linéaire est légèrement plus stable et plus simple à interpréter
 
-**Classement** :
-1. Random Forest : R² = 0.9606 (Explique 96.06% de la variance)
-2. Gradient Boosting : R² = 0.9536 (95.36%)
-3. Arbre de Décision : R² = 0.9333 (93.33%)
-4. Régression Linéaire : R² = 0.8225 (82.25%)
-5. KNN : R² = 0.7611 (76.11%)
+**Segmentation marché** :
+- 4 clusters identifiés avec K-means : économique, familial, sportif/premium, luxe
+- Segmentation cohérente confirmée par le dendrogramme
+- Variables clés : engine_size, horsepower, curb_weight, price
 
-**Interprétation** :
-- Random Forest et Gradient Boosting ont un pouvoir prédictif excellent
-- Même l'Arbre de Décision simple atteint 93% d'explication
-- Les modèles linéaires sont limités par la non-linéarité des relations
+### Variables les plus importantes
 
-#### Subplot 3 : Comparaison Train vs Test (RMSE)
+D'après l'analyse de corrélation :
+1. **engine_size** (0.872) - Taille du moteur
+2. **curb_weight** (0.834) - Poids du véhicule
+3. **horsepower** (0.811) - Puissance
+4. **width** (0.751) - Largeur
 
-**Analyse par modèle** :
+Ces 4 variables expliquent la majeure partie de la variance du prix.
 
-**Régression Linéaire** :
-- RMSE Train : 2 391.10$
-- RMSE Test : 4 660.42$
-- Gap : 2 269.32$ (Variance élevée)
+### Limites identifiées
 
-**KNN** :
-- RMSE Train : 2 026.00$
-- RMSE Test : 5 406.69$
-- Gap : 3 380.69$ (Surapprentissage sévère)
+**Limites des modèles simples** :
+- La régression linéaire suppose des relations linéaires (limitation forte)
+- KNN souffre de la dimensionnalité élevée (21 features)
+- Les deux modèles peinent sur les véhicules haut de gamme (>30 000$)
 
-**Arbre de Décision** :
-- RMSE Train : 1 920.15$
-- RMSE Test : 2 855.92$
-- Gap : 935.77$ (Léger surapprentissage)
+**Limites du projet** :
+- Dataset petit (201 véhicules) pour le machine learning
+- Données anciennes (1985) - prix non actuels
+- Encodage label simple (pourrait être amélioré avec one-hot encoding)
 
-**Random Forest** :
-- RMSE Train : 1 531.83$
-- RMSE Test : 2 195.18$
-- Gap : 663.35$ (Excellent équilibre)
+### Perspectives d'amélioration
 
-**Gradient Boosting** :
-- RMSE Train : 341.49$
-- RMSE Test : 2 383.14$
-- Gap : 2 041.65$ (Surapprentissage massif)
+**Pour atteindre l'objectif de 15% d'erreur, il faudrait** :
+- Tester des modèles plus complexes (arbres de décision, ensembles de modèles)
+- Faire du feature engineering (créer de nouvelles variables)
+- Optimiser les hyperparamètres avec GridSearch
+- Utiliser un dataset plus grand et plus récent
 
-**Enseignement** : Random Forest offre le meilleur compromis généralisation/performance.
-
-#### Subplot 4 : Erreur % par Modèle
-
-**Ligne rouge pointillée** : Objectif de 15% d'erreur
-
-**Classement** :
-1. Gradient Boosting : 9.39% (Objectif largement dépassé)
-2. Random Forest : 9.65% (Objectif dépassé)
-3. Arbre de Décision : 11.49% (Objectif atteint)
-4. Régression Linéaire : 20.17% (Objectif non atteint)
-5. KNN : 20.20% (Objectif non atteint)
-
-**Conclusion** : 3 modèles sur 5 atteignent l'objectif de moins de 15% d'erreur.
-
----
-
-### Visualisation 8.2 : Prédictions vs Réalité - Tous les Modèles
-
-**Fichier source** : `predictions_tous_modeles.png` (5 subplots)
-
-**Description** : 5 scatter plots comparant prédictions et valeurs réelles pour chaque modèle.
-
-#### Régression Linéaire
-
-**Observations** :
-- Alignement général correct sur la diagonale
-- Dispersion uniforme autour de la ligne
-- Sous-estimation marquée pour les prix > 30 000$
-- Quelques surestimations pour les prix bas
-
-#### KNN
-
-**Observations** :
-- Alignement similaire à la régression linéaire
-- Dispersion plus importante
-- Effet "escalier" visible : prédictions discrètes basées sur moyennes de voisins
-- Difficultés sur les extrêmes
-
-#### Arbre de Décision
-
-**Observations** :
-- Alignement globalement bon
-- Effet plateau : prédictions constantes dans les feuilles de l'arbre
-- Quelques prédictions éloignées de la diagonale
-- Dispersion modérée
-
-#### Random Forest
-
-**Observations** :
-- Excellent alignement sur toute la gamme de prix
-- Dispersion minimale autour de la diagonale
-- Très peu d'erreurs majeures
-- Prédictions lisses grâce à l'agrégation de 100 arbres
-- Performance homogène sur tous les segments de prix
-
-#### Gradient Boosting
-
-**Observations** :
-- Meilleur alignement visuel de tous les modèles
-- Dispersion très faible
-- Prédictions très précises
-- Pas de biais systématique visible
-- Légèrement meilleur que Random Forest visuellement
-
-**Comparaison visuelle globale** :
-- GB = RF > Arbre > LR = KNN
-- Les modèles ensemblistes produisent des nuages de points beaucoup plus concentrés autour de la diagonale
-- La différence de qualité est visuellement évidente
-
----
-
-## 9. Synthèse et Recommandations
-
-### Points Clés Identifiés
-
-#### Structure des données
-- Distribution asymétrique des prix avec concentration 5 000-15 000$
-- Dataset de 201 véhicules avec 26 variables
-- 4 segments naturels de marché identifiés par clustering
-
-#### Variables déterminantes
-- Top 3 : curb_weight (0.834), engine_size (0.872), horsepower (0.811)
-- Forte multicolinéarité entre dimensions physiques
-- Variables catégorielles moins discriminantes avec encodage label
-
-#### Performance des modèles
-- Meilleur modèle global : Random Forest (RMSE test = 2 195.18$, R² = 0.9606, erreur = 9.65%)
-- Alternative : Gradient Boosting (RMSE = 2 383.14$, R² = 0.9536, erreur = 9.39% mais surapprentissage)
-- Modèle le plus interprétable : Arbre de Décision (RMSE = 2 855.92$, erreur = 11.49%)
-- Modèles inadaptés : Régression Linéaire (20.17% erreur) et KNN (20.20% erreur)
-
-#### Validation
-- Courbes d'apprentissage saines pour Random Forest
-- Validation croisée confirme la stabilité
-- Objectif de <15% d'erreur atteint par 3 modèles
-
-#### Segmentation marché
-- 4 clusters distincts : économique, familial, sportif/premium, luxe
-- Segmentation exploitable commercialement
-- Cohérence entre K-means et classification hiérarchique
-
-### Modèle Recommandé : Random Forest
-
-**Justification** :
-1. Meilleur RMSE test (2 195.18$) et meilleur R² (0.9606)
-2. Erreur de 9.65% : largement sous l'objectif de 15%
-3. Équilibre train/test optimal : gap de seulement 663.35$ (pas de surapprentissage)
-4. Robustesse : validation croisée 5-fold donne RMSE moyen de 2 351.04$ (±605.07)
-5. Interprétabilité acceptable : importance des variables accessible
-
-**Limites** :
-- Moins interprétable qu'un arbre unique
-- Temps d'entraînement plus long
-- Boîte noire relative
-
-### Visualisations Essentielles pour Présentation
-
-1. Matrice de corrélation : montre les relations clés entre variables
-2. Scatter plots : illustre les relations prix-features principales
-3. Courbes d'apprentissage : prouve la généralisation du modèle
-4. Comparaison modèles (4 subplots) : justifie le choix de Random Forest
-5. Clusters visualisation : démontre la segmentation du marché
-
-### Messages Clés
-
-- Le poids et la taille du moteur expliquent 74.9% de l'importance dans Random Forest
-- Les modèles ensemblistes surpassent largement les modèles simples
-- L'objectif de <15% d'erreur est dépassé avec 9.65% d'erreur moyenne (Random Forest)
-- 4 segments de marché distincts ont été identifiés par clustering
-- Le modèle Random Forest offre le meilleur compromis performance/robustesse/interprétabilité
+**Apprentissages pour deux étudiants en initiation** :
+- Importance de l'exploration des données avant toute modélisation
+- La méthodologie CRISP-DM structure bien un projet data science
+- Les modèles simples ne suffisent pas toujours - c'est normal !
+- La validation croisée est essentielle pour estimer la performance réelle
+- Le clustering permet de découvrir des structures cachées dans les données
 
 ---
 
 ## Conclusion
 
-Les visualisations produites dans ce projet démontrent une démarche méthodique et rigoureuse conforme aux standards de la Data Science. L'analyse a permis de :
+Ce projet d'initiation nous a permis de mettre en pratique l'ensemble du cycle de vie d'un projet de Data Science, de l'exploration des données à la modélisation en passant par le prétraitement rigoureux.
 
-1. Comprendre la structure des données et identifier les variables clés
-2. Justifier les décisions de prétraitement (conservation des outliers, gestion des valeurs manquantes)
-3. Évaluer objectivement 5 modèles de régression différents
-4. Valider la généralisation du meilleur modèle (Random Forest)
-5. Segmenter le marché en 4 clusters exploitables
-6. Atteindre l'objectif fixé : erreur < 15% (résultat : 9.65%)
+**Bilan réaliste** :
+- ✅ Méthodologie complète appliquée (CRISP-DM)
+- ✅ Exploration et préparation rigoureuses
+- ✅ 2 modèles simples testés et validés
+- ✅ Segmentation marché réussie (4 clusters)
+- ❌ Objectif de 15% d'erreur non atteint avec les modèles basiques
 
-Le modèle Random Forest retenu prédit le prix des voitures d'occasion avec un R² de 0.9606 (96.06% de variance expliquée) et une erreur moyenne de 9.65%, dépassant largement les attentes initiales du projet (objectif : <15%).
+**Enseignement principal** : Les modèles simples (Régression Linéaire, KNN) ne permettent pas d'atteindre l'objectif ambitieux de 15% d'erreur sur ce dataset. Pour progresser, il faudrait explorer des algorithmes plus sophistiqués lors de modules avancés.
 
 ---
 
-**Projet réalisé par Florian Huguet et Matteo Robin dans le cadre du cours d'initiation au Data Science et Machine Learning - Décembre 2025**
+---
+
+**Projet réalisé par Florian Huguet et Matteo Robin**
+**Cours d'initiation au Data Science et Machine Learning - Décembre 2025**
